@@ -100,6 +100,8 @@ export function useNavHints({
   // Global keydown listener
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+
       const tag = (e.target as HTMLElement)?.tagName;
       const isInput =
         tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";

@@ -53,6 +53,10 @@ export function VimSidebar() {
   // Keyboard handler
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // Skip if another handler already handled this event
+      // (e.g. useVimNavigation in a demo component)
+      if (e.defaultPrevented) return;
+
       const tag = (e.target as HTMLElement)?.tagName;
       const isInput =
         tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
@@ -60,13 +64,6 @@ export function VimSidebar() {
       if (isInput || isEditable) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (document.querySelector("[data-overlay-open]")) return;
-
-      // Don't handle if space-motion or yank mode is active
-      // (those set their own indicators in the DOM)
-      const indicator = document.querySelector(
-        ".fixed.bottom-4.z-\\[9999\\]"
-      );
-      if (indicator) return;
 
       const links = linksRef.current;
       if (links.length === 0) scanLinks();

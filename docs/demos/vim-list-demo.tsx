@@ -6,6 +6,9 @@ import { ListItem } from "@/components/list-item";
 import { SectionHeader } from "@/components/section-header";
 import { FuzzyText } from "@/components/fuzzy-text";
 import { useFuzzyFilter } from "@/hooks/use-fuzzy-filter";
+import { useVimNavigation } from "@/hooks/use-vim-navigation";
+import { useScrollIntoView } from "@/hooks/use-scroll-into-view";
+import { useMouseInteraction } from "@/hooks/use-mouse-interaction";
 import { ComponentPreview } from "./component-preview";
 
 const items = [
@@ -31,6 +34,20 @@ export function VimListDemo() {
     (item) => item.name,
     setSelectedIndex
   );
+
+  const { onItemMouseMove } = useMouseInteraction();
+  useScrollIntoView(listRef, selectedIndex);
+
+  useVimNavigation({
+    items: filtered,
+    selectedIndex,
+    setSelectedIndex,
+    searchFocused,
+    setSearchFocused,
+    query,
+    setQuery,
+    searchRef,
+  });
 
   const sections = filtered.reduce(
     (acc, item) => {
@@ -65,7 +82,7 @@ export function VimListDemo() {
                   index={idx}
                   selected={idx === selectedIndex}
                   onClick={() => setSelectedIndex(idx)}
-                  onMouseMove={() => setSelectedIndex(idx)}
+                  onMouseMove={() => onItemMouseMove(idx, setSelectedIndex)}
                 >
                   <FuzzyText
                     text={item.name}
