@@ -26,10 +26,10 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <div
-      className={`relative flex items-center border-b bg-zinc-950/80 transition-colors duration-150 ${
+      className={`relative flex items-center border-b transition-all duration-200 ${
         searchFocused
-          ? "border-violet-500/40 bg-violet-500/[0.03]"
-          : "border-white/[0.06]"
+          ? "border-violet-500/60 bg-violet-500/[0.06] shadow-[inset_0_-1px_12px_-4px_rgba(139,92,246,0.15)]"
+          : "border-white/[0.06] bg-zinc-950/80"
       }`}
     >
       {/* Magnifying glass icon */}
