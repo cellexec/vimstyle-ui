@@ -1,0 +1,45 @@
+---
+title: Command Palette
+description: Floating command palette demo with fuzzy search and keyboard navigation.
+---
+
+import { PaletteDemo } from "@/demos/palette-demo";
+
+A command palette overlay built with `CommandPalette`. Press the search button or `Ctrl+K` to open. Type to fuzzy-filter commands, use arrow keys to navigate, Enter to select.
+
+<PaletteDemo />
+
+## What's demonstrated
+
+- **CommandPalette** layout as a floating overlay
+- **Ctrl+K** global shortcut to open
+- **Fuzzy search** with character highlighting
+- **Category labels** in custom `renderItem`
+- Arrow / Ctrl+j/k navigation with Enter to select
+
+## Source
+
+```tsx
+const [open, setOpen] = useState(false);
+
+// Ctrl+K to open
+useEffect(() => {
+  function handleKeyDown(e: KeyboardEvent) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      setOpen(true);
+    }
+  }
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, []);
+
+<CommandPalette
+  open={open}
+  onClose={() => setOpen(false)}
+  items={commands}
+  keyFn={(c) => c.name}
+  onSelect={(command) => runCommand(command)}
+  placeholder="Type a command…"
+/>
+```

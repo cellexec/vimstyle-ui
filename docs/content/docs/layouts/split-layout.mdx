@@ -1,0 +1,59 @@
+---
+title: SplitLayout
+description: Two-panel layout with a navigable list and a detail pane.
+---
+
+`SplitLayout` places a navigable list on the left and a detail pane on the right. Selecting an item in the list updates the detail view. All keyboard navigation, search, and scroll behavior is wired up automatically.
+
+## Import
+
+```tsx
+import { SplitLayout } from "@/layouts/split-layout";
+```
+
+## Props
+
+Inherits all props from `ListLayout` except `actions`, plus:
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `renderDetail` | `(item: T) => ReactNode` | required | Render function for the detail pane. |
+| `emptyDetail` | `ReactNode` | `undefined` | Shown when no item is selected. |
+| `listWidth` | `string` | `"w-2/5"` | Tailwind width class for the list panel. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { SplitLayout } from "@/layouts/split-layout";
+
+const emails = [
+  { id: "1", subject: "Q1 Roadmap", from: "Sarah", body: "..." },
+  { id: "2", subject: "Deploy v2.4", from: "DevOps", body: "..." },
+];
+
+export default function MailPage() {
+  return (
+    <SplitLayout
+      title="Mail"
+      items={emails}
+      keyFn={(e) => e.subject}
+      renderDetail={(email) => (
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-zinc-100">
+            {email.subject}
+          </h3>
+          <p className="mt-4 text-sm text-zinc-300">{email.body}</p>
+        </div>
+      )}
+    />
+  );
+}
+```
+
+## Notes
+
+- The detail pane automatically shows the currently highlighted item — no need to track selection state yourself.
+- On narrow screens, consider using `listWidth="w-1/3"` or building a custom mobile layout.
+- The detail pane has `overflow-y-auto` for scrollable content.

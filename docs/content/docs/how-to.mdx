@@ -1,0 +1,247 @@
+---
+title: How To
+description: Step-by-step guide to building a keyboard-driven page in a fresh Next.js project.
+---
+
+Start to finish — create a Next.js project, add vimstyle-ui, and build a working keyboard-navigable page.
+
+## 1. Create a Next.js project
+
+```bash
+bunx create-next-app@latest my-app
+```
+
+When prompted, select:
+- TypeScript — **Yes**
+- ESLint — your preference
+- Tailwind CSS — **Yes**
+- `src/` directory — **No** (keeps paths simple)
+- App Router — **Yes**
+- Turbopack — your preference
+- Import alias — keep the default `@/*`
+
+```bash
+cd my-app
+```
+
+## 2. Clone vimstyle-ui
+
+In a separate directory, clone the repo so you can copy components from it:
+
+```bash
+git clone https://github.com/cellexec/vimstyle-ui.git /tmp/vimstyle-ui
+```
+
+## 3. Copy components into your project
+
+Copy the registry files. The CLI does this automatically, but doing it manually shows what's happening:
+
+```bash
+# Create directories
+mkdir -p components hooks lib layouts
+
+# Core components
+cp /tmp/vimstyle-ui/registry/components/vim-page.tsx components/
+cp /tmp/vimstyle-ui/registry/components/vim-list.tsx components/
+cp /tmp/vimstyle-ui/registry/components/list-item.tsx components/
+cp /tmp/vimstyle-ui/registry/components/search-bar.tsx components/
+cp /tmp/vimstyle-ui/registry/components/fuzzy-text.tsx components/
+cp /tmp/vimstyle-ui/registry/components/kbd-hint.tsx components/
+cp /tmp/vimstyle-ui/registry/components/section-header.tsx components/
+cp /tmp/vimstyle-ui/registry/components/kbd-button.tsx components/
+
+# Hooks
+cp /tmp/vimstyle-ui/registry/hooks/use-vim-navigation.ts hooks/
+cp /tmp/vimstyle-ui/registry/hooks/use-fuzzy-filter.ts hooks/
+cp /tmp/vimstyle-ui/registry/hooks/use-mouse-interaction.ts hooks/
+cp /tmp/vimstyle-ui/registry/hooks/use-scroll-into-view.ts hooks/
+
+# Utility
+cp /tmp/vimstyle-ui/registry/lib/fuzzy.ts lib/
+
+# Layout (the pre-wired page template)
+cp /tmp/vimstyle-ui/registry/layouts/list-layout.tsx layouts/
+```
+
+Or use the CLI instead:
+
+```bash
+bunx vimstyle-ui init
+bunx vimstyle-ui add --all
+```
+
+## 4. Set up the dark background
+
+vimstyle-ui is designed for dark mode on `zinc-950`. Update your global CSS to set a dark body background. In `app/globals.css`, add:
+
+```css
+body {
+  background-color: #09090b; /* zinc-950 */
+  color: #f4f4f5; /* zinc-100 */
+}
+```
+
+## 5. Build your first page
+
+Replace the contents of `app/page.tsx` with a full-screen list page:
+
+```tsx
+"use client";
+
+import { ListLayout } from "@/layouts/list-layout";
+
+const tasks = [
+  { id: "1", title: "Set up CI pipeline", status: "In Progress" },
+  { id: "2", title: "Write API docs", status: "In Progress" },
+  { id: "3", title: "Fix login redirect bug", status: "In Progress" },
+  { id: "4", title: "Design settings page", status: "Todo" },
+  { id: "5", title: "Add dark mode toggle", status: "Todo" },
+  { id: "6", title: "Migrate to Postgres", status: "Todo" },
+  { id: "7", title: "Ship v1.0", status: "Done" },
+  { id: "8", title: "Set up monitoring", status: "Done" },
+];
+
+export default function Home() {
+  return (
+    <div className="h-screen">
+      <ListLayout
+        title="Tasks"
+        subtitle="My project board"
+        items={tasks}
+        keyFn={(t) => t.title}
+        groupFn={(t) => t.status}
+        onSelect={(task) => alert(`Selected: ${task.title}`)}
+        onEscape={() => console.log("escape pressed")}
+      />
+    </div>
+  );
+}
+```
+
+Run it:
+
+```bash
+bun run dev
+```
+
+Open `http://localhost:3000`. You should see a full-page list grouped by status. Try:
+
+- `j` / `k` to move up and down
+- `/` to focus the search bar
+- Type to fuzzy-filter tasks
+- `Esc` to clear search
+- `Enter` to select
+
+## 6. Add action buttons
+
+Import `KbdButton` to add keyboard-bound action buttons above the list:
+
+```tsx
+"use client";
+
+import { ListLayout } from "@/layouts/list-layout";
+import { KbdButton } from "@/components/kbd-button";
+
+// ... same tasks array ...
+
+export default function Home() {
+  return (
+    <div className="h-screen">
+      <ListLayout
+        title="Tasks"
+        subtitle="My project board"
+        items={tasks}
+        keyFn={(t) => t.title}
+        groupFn={(t) => t.status}
+        onSelect={(task) => alert(`Selected: ${task.title}`)}
+        actions={
+          <>
+            <KbdButton shortcut="n" variant="primary" onClick={() => alert("New task")}>
+              New Task
+            </KbdButton>
+            <KbdButton shortcut="d" variant="danger" onClick={() => alert("Delete")}>
+              Delete
+            </KbdButton>
+          </>
+        }
+      />
+    </div>
+  );
+}
+```
+
+Now pressing `n` triggers "New Task" and `d` triggers "Delete" — no click required.
+
+## 7. Custom item rendering
+
+The default rendering shows plain text with fuzzy highlighting. To render richer items, use `renderItem`:
+
+```tsx
+<ListLayout
+  title="Tasks"
+  items={tasks}
+  keyFn={(t) => t.title}
+  groupFn={(t) => t.status}
+  onSelect={(task) => alert(task.title)}
+  renderItem={(task, { selected, query }) => (
+    <div className="flex items-center justify-between w-full">
+      <FuzzyText text={task.title} query={query} className="text-sm text-zinc-200" />
+      <span className={`text-xs ${selected ? "text-violet-400" : "text-zinc-500"}`}>
+        {task.status}
+      </span>
+    </div>
+  )}
+/>
+```
+
+Import `FuzzyText` from `@/components/fuzzy-text` to preserve the fuzzy highlighting in your custom render.
+
+## 8. Add a second page with split layout
+
+Copy the split layout and create a detail view:
+
+```bash
+cp /tmp/vimstyle-ui/registry/layouts/split-layout.tsx layouts/
+```
+
+Create `app/mail/page.tsx`:
+
+```tsx
+"use client";
+
+import { SplitLayout } from "@/layouts/split-layout";
+
+const emails = [
+  { id: "1", from: "Alice", subject: "Project update", body: "The deploy went smoothly." },
+  { id: "2", from: "Bob", subject: "Code review", body: "Left comments on the PR." },
+  { id: "3", from: "Carol", subject: "Meeting notes", body: "Action items from standup." },
+];
+
+export default function MailPage() {
+  return (
+    <div className="h-screen">
+      <SplitLayout
+        title="Mail"
+        items={emails}
+        keyFn={(e) => `${e.from} — ${e.subject}`}
+        renderDetail={(email) => (
+          <div className="p-6">
+            <h2 className="text-lg font-medium text-zinc-100">{email.subject}</h2>
+            <p className="mt-1 text-sm text-zinc-400">From {email.from}</p>
+            <p className="mt-4 text-sm text-zinc-300">{email.body}</p>
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+```
+
+Navigate to `http://localhost:3000/mail` — a two-panel layout with the list on the left and email detail on the right.
+
+## What's next
+
+- Browse the [Components](/docs/components) and [Hooks](/docs/hooks) reference for the full API.
+- Check the [Layouts](/docs/layouts) page for pre-composed patterns.
+- Look at the [Demos](/docs/demos) for complete app examples.
+- Read [Philosophy](/docs/philosophy) to understand the design decisions.

@@ -5,9 +5,14 @@
     "index",
     "philosophy",
     "installation",
+    "how-to",
     "---Components---",
     "components",
     "---Hooks---",
-    "hooks"
+    "hooks",
+    "---Layouts---",
+    "layouts",
+    "---Demos---",
+    "demos"
   ]
 }

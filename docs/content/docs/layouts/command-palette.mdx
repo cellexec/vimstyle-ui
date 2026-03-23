@@ -1,0 +1,81 @@
+---
+title: CommandPalette
+description: Floating search-and-select overlay for quick actions.
+---
+
+`CommandPalette` renders a centered floating overlay with a search bar and navigable results list. It's the vim-style equivalent of VS Code's command palette or Spotlight.
+
+## Import
+
+```tsx
+import { CommandPalette } from "@/layouts/command-palette";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | required | Whether the palette is visible. |
+| `onClose` | `() => void` | required | Called when the palette should close. |
+| `items` | `T[]` | required | Array of items to search through. |
+| `keyFn` | `(item: T) => string` | required | Extracts the searchable string from each item. |
+| `renderItem` | `(item: T, props) => ReactNode` | `undefined` | Custom render for each result. |
+| `onSelect` | `(item: T) => void` | required | Called when an item is selected. |
+| `placeholder` | `string` | `"Type a command…"` | Search input placeholder. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { CommandPalette } from "@/layouts/command-palette";
+
+const commands = [
+  { id: "1", name: "New Project" },
+  { id: "2", name: "Open Settings" },
+  { id: "3", name: "Run Tests" },
+];
+
+export default function App() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen(true);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return (
+    <CommandPalette
+      open={open}
+      onClose={() => setOpen(false)}
+      items={commands}
+      keyFn={(c) => c.name}
+      onSelect={(command) => console.log("Run", command.name)}
+    />
+  );
+}
+```
+
+## Keyboard behavior
+
+| Key | Action |
+|---|---|
+| `↑` / `↓` | Navigate results |
+| `Ctrl+j` / `Ctrl+k` | Navigate results (vim-style) |
+| `Enter` | Select highlighted item |
+| `Esc` | Close palette |
+| Type | Fuzzy filter results |
+
+## Notes
+
+- The search input auto-focuses when the palette opens.
+- State resets (query cleared, selection at top) each time the palette opens.
+- Adds `data-overlay-open` to the backdrop so global shortcuts are suppressed.
+- The palette closes automatically after selecting an item.

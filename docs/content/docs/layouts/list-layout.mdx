@@ -1,0 +1,76 @@
+---
+title: ListLayout
+description: Full-page navigable list with search, grouping, and action buttons — all wired up.
+---
+
+`ListLayout` is the most common pattern in vim-style apps. It composes VimPage, VimList, ListItem, SectionHeader, FuzzyText, and all four hooks into a single component. You pass items and callbacks — it handles keyboard navigation, fuzzy search, scroll, and mouse interaction.
+
+## Import
+
+```tsx
+import { ListLayout } from "@/layouts/list-layout";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | required | Page title. |
+| `subtitle` | `string` | `undefined` | Subtitle below the title. |
+| `items` | `T[]` | required | Array of items to display. |
+| `keyFn` | `(item: T) => string` | required | Extracts the searchable string from each item. |
+| `renderItem` | `(item: T, props) => ReactNode` | `undefined` | Custom render for each item. Defaults to `FuzzyText` using `keyFn`. |
+| `groupFn` | `(item: T) => string` | `undefined` | Groups items into sections with `SectionHeader`. |
+| `onSelect` | `(item: T, index: number) => void` | `undefined` | Called when an item is selected (Enter or click). |
+| `onEscape` | `() => void` | `undefined` | Called when Esc is pressed in normal mode. |
+| `hints` | `HintDef[]` | j/k, /, Enter, Esc | Keyboard hints for the bottom bar. |
+| `actions` | `ReactNode` | `undefined` | Action buttons rendered above the list. |
+| `placeholder` | `string` | `"Search…"` | Search input placeholder. |
+| `shortcuts` | `Record<string, () => void>` | `undefined` | Extra keyboard shortcuts for normal mode. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { ListLayout } from "@/layouts/list-layout";
+import { KbdButton } from "@/components/kbd-button";
+
+const projects = [
+  { id: "1", name: "API Gateway", group: "Active" },
+  { id: "2", name: "Mobile App", group: "Active" },
+  { id: "3", name: "Legacy CMS", group: "Archived" },
+];
+
+export default function ProjectsPage() {
+  return (
+    <ListLayout
+      title="Projects"
+      items={projects}
+      keyFn={(p) => p.name}
+      groupFn={(p) => p.group}
+      onSelect={(project) => console.log("Open", project.name)}
+      actions={
+        <KbdButton shortcut="n" variant="primary" onClick={() => {}}>
+          New Project
+        </KbdButton>
+      }
+    />
+  );
+}
+```
+
+## What's wired up
+
+- `useVimNavigation` — j/k, /, Enter, Esc, plus any custom `shortcuts`
+- `useFuzzyFilter` — filters items and resets selection on query change
+- `useMouseInteraction` — click and hover selection
+- `useScrollIntoView` — auto-scrolls the selected item into view
+- `SectionHeader` grouping when `groupFn` is provided
+- `FuzzyText` highlighting in default item rendering
+
+## Notes
+
+- The layout fills its parent height. The parent must have a defined height (e.g., `h-screen`).
+- If `renderItem` is omitted, items render as `FuzzyText` using `keyFn`.
+- The `actions` slot renders above the list, below the page header.

@@ -1,0 +1,41 @@
+---
+title: Projects
+description: Full project management page demo using ListLayout.
+---
+
+import { ProjectsDemo } from "@/demos/projects-demo";
+
+A complete project management page built with `ListLayout`. Features grouped sections (Active / Archived), action buttons with keyboard shortcuts, fuzzy search, and a delete confirmation dialog.
+
+<ProjectsDemo />
+
+## What's demonstrated
+
+- **ListLayout** with `groupFn` for section headers
+- **KbdButton** actions (`n` for new, `d` for delete)
+- **ConfirmDialog** triggered by the delete action
+- **FuzzyText** highlighting in custom `renderItem`
+- Full keyboard navigation (j/k, /, Enter, Esc)
+
+## Source
+
+```tsx
+<ListLayout
+  title="Projects"
+  subtitle="All your team projects"
+  items={projects}
+  keyFn={(p) => p.name}
+  groupFn={(p) => p.status === "active" ? "Active" : "Archived"}
+  onSelect={(project) => open(project)}
+  actions={
+    <>
+      <KbdButton shortcut="n" variant="primary" onClick={createNew}>
+        New Project
+      </KbdButton>
+      <KbdButton shortcut="d" onClick={confirmDelete}>
+        Delete
+      </KbdButton>
+    </>
+  }
+/>
+```

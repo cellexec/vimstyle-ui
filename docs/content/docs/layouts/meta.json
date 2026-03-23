@@ -1,0 +1,9 @@
+{
+  "title": "Layouts",
+  "pages": [
+    "index",
+    "list-layout",
+    "split-layout",
+    "command-palette"
+  ]
+}

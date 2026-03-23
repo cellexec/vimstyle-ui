@@ -1,0 +1,9 @@
+{
+  "title": "Demos",
+  "pages": [
+    "index",
+    "projects",
+    "mail-client",
+    "command-palette"
+  ]
+}

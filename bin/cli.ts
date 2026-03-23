@@ -84,6 +84,50 @@ const REGISTRY: Record<string, RegistrySection> = {
       deps: [],
     },
   },
+  layouts: {
+    "list-layout": {
+      file: "registry/layouts/list-layout.tsx",
+      deps: [
+        "vim-page",
+        "vim-list",
+        "list-item",
+        "section-header",
+        "fuzzy-text",
+        "use-vim-navigation",
+        "use-fuzzy-filter",
+        "use-mouse-interaction",
+        "use-scroll-into-view",
+        "fuzzy",
+      ],
+    },
+    "split-layout": {
+      file: "registry/layouts/split-layout.tsx",
+      deps: [
+        "vim-page",
+        "vim-list",
+        "list-item",
+        "section-header",
+        "fuzzy-text",
+        "use-vim-navigation",
+        "use-fuzzy-filter",
+        "use-mouse-interaction",
+        "use-scroll-into-view",
+        "fuzzy",
+      ],
+    },
+    "command-palette": {
+      file: "registry/layouts/command-palette.tsx",
+      deps: [
+        "search-bar",
+        "list-item",
+        "fuzzy-text",
+        "kbd-hint",
+        "use-fuzzy-filter",
+        "use-scroll-into-view",
+        "fuzzy",
+      ],
+    },
+  },
   lib: {
     fuzzy: {
       file: "registry/lib/fuzzy.ts",
@@ -123,6 +167,8 @@ function targetDir(section: string): string {
       return "components/vimstyle";
     case "hooks":
       return "hooks/vimstyle";
+    case "layouts":
+      return "layouts/vimstyle";
     case "lib":
       return "lib/vimstyle";
     default:
@@ -135,6 +181,7 @@ function rewriteImports(source: string): string {
   return source
     .replace(/@\/components\//g, "@/components/vimstyle/")
     .replace(/@\/hooks\//g, "@/hooks/vimstyle/")
+    .replace(/@\/layouts\//g, "@/layouts/vimstyle/")
     .replace(/@\/lib\//g, "@/lib/vimstyle/");
 }
 
@@ -162,7 +209,7 @@ function cmdInit() {
   console.log(`\n${bold("vimstyle-ui")} ${dim("init")}\n`);
 
   // Create target directories
-  const dirs = ["components/vimstyle", "hooks/vimstyle", "lib/vimstyle"];
+  const dirs = ["components/vimstyle", "hooks/vimstyle", "layouts/vimstyle", "lib/vimstyle"];
   for (const d of dirs) {
     const full = resolve(cwd, d);
     mkdirSync(full, { recursive: true });

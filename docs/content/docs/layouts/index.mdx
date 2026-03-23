@@ -1,0 +1,22 @@
+---
+title: Layouts
+description: Pre-composed page structures that wire up components and hooks into ready-to-use patterns.
+---
+
+Layouts sit above components and hooks. They compose multiple primitives into full page structures with keyboard navigation, fuzzy search, and state management already wired up.
+
+## Available Layouts
+
+| Layout | Description |
+|---|---|
+| [ListLayout](/docs/layouts/list-layout) | Full-page navigable list with search, grouping, and action buttons. |
+| [SplitLayout](/docs/layouts/split-layout) | Two-panel layout — list on the left, detail pane on the right. |
+| [CommandPalette](/docs/layouts/command-palette) | Floating search-and-select overlay for quick actions. |
+
+## When to use layouts vs components
+
+**Use a layout** when you want a complete page structure with all the wiring done for you. Pass your data, get a working page.
+
+**Use components directly** when you need custom composition, non-standard layouts, or fine-grained control over state and behavior.
+
+Layouts are built from the same components and hooks you'd use directly — they're just a higher-level starting point.
