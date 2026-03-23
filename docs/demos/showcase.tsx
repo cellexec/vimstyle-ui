@@ -61,6 +61,13 @@ export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
     return () => window.removeEventListener("keydown", handler, true);
   }, [hintsOpen, hints, allKeys, dismiss]);
 
+  // Auto-hide after 5 seconds
+  useEffect(() => {
+    if (!hintsOpen) return;
+    const timer = setTimeout(dismiss, 5000);
+    return () => clearTimeout(timer);
+  }, [hintsOpen, dismiss]);
+
   return (
     <div className="not-prose my-10">
       {/* Outer shell */}

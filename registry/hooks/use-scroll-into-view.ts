@@ -21,8 +21,17 @@ export function useScrollIntoView(
       `[data-item-index="${selectedIndex}"]`
     ) as HTMLElement | null;
 
-    if (el) {
-      el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!el) return;
+
+    // Manually scroll only the list container — avoids scrollIntoView
+    // pushing parent containers (which hides the search bar above).
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    if (elRect.top < containerRect.top) {
+      container.scrollTop -= containerRect.top - elRect.top;
+    } else if (elRect.bottom > containerRect.bottom) {
+      container.scrollTop += elRect.bottom - containerRect.bottom;
     }
   }, [listRef, selectedIndex]);
 }
