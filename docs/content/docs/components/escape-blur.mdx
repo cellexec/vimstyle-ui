@@ -1,0 +1,38 @@
+---
+title: EscapeBlur
+description: Global Escape handler that blurs any focused input — essential for vim-style UX.
+---
+
+`EscapeBlur` is a zero-UI component that adds a global keydown listener. When Escape is pressed while an input, textarea, select, or contentEditable element is focused, it blurs that element — returning the user to "normal mode."
+
+Mount it once in your root layout. It handles everything.
+
+## Import
+
+```tsx
+import { EscapeBlur } from "@/components/escape-blur";
+```
+
+## Usage
+
+```tsx
+// app/layout.tsx
+import { EscapeBlur } from "@/components/escape-blur";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <EscapeBlur />
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+## Notes
+
+- Renders nothing (`return null`).
+- Only acts on `<input>`, `<textarea>`, `<select>`, and `contentEditable` elements.
+- Calls `e.preventDefault()` to prevent Escape from triggering other browser behavior.
