@@ -3,7 +3,11 @@ title: KbdButton
 description: Action button with an embedded keyboard shortcut that registers a global key listener.
 ---
 
+import { KbdButtonDemo } from "@/demos/kbd-button-demo";
+
 `KbdButton` renders a styled button with a `KbdHint` badge showing the shortcut key. It registers a global `keydown` listener that fires the action when the shortcut is pressed — but only when no input is focused and no overlay is open.
+
+<KbdButtonDemo />
 
 ## Import
 
