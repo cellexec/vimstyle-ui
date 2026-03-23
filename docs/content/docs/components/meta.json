@@ -1,0 +1,17 @@
+{
+  "title": "Components",
+  "pages": [
+    "index",
+    "vim-page",
+    "vim-list",
+    "search-bar",
+    "fuzzy-text",
+    "kbd-hint",
+    "kbd-button",
+    "list-item",
+    "section-header",
+    "focus-overlay",
+    "confirm-dialog",
+    "save-discard-dialog"
+  ]
+}

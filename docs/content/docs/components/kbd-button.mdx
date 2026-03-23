@@ -1,0 +1,50 @@
+---
+title: KbdButton
+description: Action button with an embedded keyboard shortcut that registers a global key listener.
+---
+
+`KbdButton` renders a styled button with a `KbdHint` badge showing the shortcut key. It registers a global `keydown` listener that fires the action when the shortcut is pressed — but only when no input is focused and no overlay is open.
+
+## Import
+
+```tsx
+import { KbdButton } from "@/components/kbd-button";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `shortcut` | `string` | required | The keyboard key that triggers the action (e.g., `"n"`, `"d"`). |
+| `onClick` | `() => void` | `undefined` | Callback when clicked or shortcut pressed. |
+| `href` | `string` | `undefined` | URL to navigate to when triggered. Uses Next.js `router.push`. |
+| `variant` | `"primary" \| "secondary"` | `"secondary"` | Visual variant. |
+| `children` | `ReactNode` | required | Button label. |
+
+## Usage
+
+```tsx
+{/* Primary action */}
+<KbdButton shortcut="n" onClick={() => createNew()} variant="primary">
+  New Project
+</KbdButton>
+
+{/* Secondary with navigation */}
+<KbdButton shortcut="s" href="/settings">
+  Settings
+</KbdButton>
+```
+
+## Variants
+
+| Variant | Background | Use case |
+|---|---|---|
+| `primary` | Solid violet (`bg-violet-600`) | Main page action |
+| `secondary` | Transparent with border (`bg-white/[0.04]`) | Supporting actions |
+
+## Notes
+
+- The global listener checks `e.target.tagName` to skip when `INPUT`, `TEXTAREA`, or `SELECT` is focused.
+- It also checks for `[data-overlay-open]` in the DOM to skip when a `FocusOverlay` or dialog is active.
+- Key matching is case-insensitive.
+- Supports both `onClick` and `href` — both can be provided simultaneously.

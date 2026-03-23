@@ -1,0 +1,48 @@
+---
+title: KbdHint
+description: Small inline badge that displays a keyboard shortcut label.
+---
+
+`KbdHint` renders a `<kbd>` element styled as a compact badge with a violet tint. Used throughout the library to show keyboard shortcuts inline.
+
+## Import
+
+```tsx
+import { KbdHint } from "@/components/kbd-hint";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | required | The shortcut label to display. |
+| `size` | `"sm" \| "md"` | `"md"` | Badge size. `sm` is more compact for tight spaces. |
+
+## Usage
+
+```tsx
+{/* Default size */}
+<KbdHint>Enter</KbdHint>
+
+{/* Small size — used in bottom hints bars and list items */}
+<KbdHint size="sm">/</KbdHint>
+
+{/* Multiple keys in a row */}
+<div className="flex items-center gap-1">
+  <KbdHint size="sm">j</KbdHint>
+  <KbdHint size="sm">k</KbdHint>
+  <span className="text-zinc-500 text-xs">navigate</span>
+</div>
+```
+
+## Sizes
+
+| Size | Text | Padding | Use case |
+|---|---|---|---|
+| `sm` | 9px | `px-1 py-0.5` | Bottom hints bar, inline in list items |
+| `md` | 10px | `px-1.5 py-0.5` | Standalone hints, search bar `/` hint |
+
+## Notes
+
+- The styling uses `bg-violet-500/15` with a `border-violet-500/20` border for the characteristic violet tint.
+- Renders as an inline-flex element so it aligns cleanly with text.

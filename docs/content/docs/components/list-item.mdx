@@ -1,0 +1,57 @@
+---
+title: ListItem
+description: Selectable and editable list row with three visual states.
+---
+
+`ListItem` renders a single row in a navigable list. It has three visual states driven by a colored left border, background tint, and dot indicator.
+
+## Import
+
+```tsx
+import { ListItem } from "@/components/list-item";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `selected` | `boolean` | required | Whether this item is currently selected. |
+| `editing` | `boolean` | `false` | Whether this item is being edited. |
+| `onClick` | `() => void` | `undefined` | Click handler. |
+| `onMouseMove` | `() => void` | `undefined` | Mouse move handler, typically from `useMouseInteraction`. |
+| `children` | `ReactNode` | required | Row content. |
+| `index` | `number` | required | Item index, set as `data-item-index` for `useScrollIntoView`. |
+
+## Visual states
+
+| State | Left border | Background | Dot | Extra |
+|---|---|---|---|---|
+| Default | transparent | transparent | none | -- |
+| Selected | violet | `violet-500/[0.06]` | violet | `Enter` kbd hint |
+| Editing | amber | `amber-500/[0.06]` | amber | -- |
+
+## Usage
+
+```tsx
+{items.map((item, i) => (
+  <ListItem
+    key={item.id}
+    index={i}
+    selected={i === selectedIndex}
+    editing={editingId === item.id}
+    onClick={() => onSelect(i)}
+    onMouseMove={() => onItemMouseMove(i, setSelectedIndex)}
+  >
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-zinc-200">{item.name}</span>
+      <span className="text-xs text-zinc-500">{item.date}</span>
+    </div>
+  </ListItem>
+))}
+```
+
+## Notes
+
+- The `index` prop is set as `data-item-index` on the DOM element. This is how `useScrollIntoView` finds the element to scroll into view.
+- When selected (not editing), an `Enter` `KbdHint` badge appears on the right side of the row.
+- The editing state takes visual priority over the selected state.

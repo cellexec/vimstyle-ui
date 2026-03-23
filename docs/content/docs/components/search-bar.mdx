@@ -1,0 +1,55 @@
+---
+title: SearchBar
+description: Fuzzy search input with magnifying glass icon and keyboard hint.
+---
+
+`SearchBar` renders a text input with a magnifying glass icon on the left and a `/` keyboard hint on the right. The hint automatically hides when the input is focused or the query is non-empty.
+
+## Import
+
+```tsx
+import { SearchBar } from "@/components/search-bar";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `query` | `string` | required | Current search query value. |
+| `onQueryChange` | `(q: string) => void` | required | Callback when the query changes. |
+| `placeholder` | `string` | `"Search..."` | Input placeholder text. |
+| `searchRef` | `RefObject<HTMLInputElement>` | required | Ref to the input element. |
+| `searchFocused` | `boolean` | required | Whether the input is currently focused. |
+| `onFocusChange` | `(focused: boolean) => void` | required | Callback when focus state changes. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { SearchBar } from "@/components/search-bar";
+
+export function MySearch() {
+  const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
+  const ref = useRef<HTMLInputElement>(null!);
+
+  return (
+    <SearchBar
+      query={query}
+      onQueryChange={setQuery}
+      searchRef={ref}
+      searchFocused={focused}
+      onFocusChange={setFocused}
+      placeholder="Filter items..."
+    />
+  );
+}
+```
+
+## Notes
+
+- Usually embedded inside `VimList`, but can be used standalone.
+- The `/` hint uses the `KbdHint` component internally.
+- The input has no border of its own — it uses a bottom border to separate from list content below.

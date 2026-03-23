@@ -1,0 +1,66 @@
+---
+title: useMouseInteraction
+description: Guards against accidental hover selection by waiting for real mouse movement.
+---
+
+`useMouseInteraction` solves a common problem in keyboard-navigable lists: on page load, the cursor is already over a list item, and that item immediately gets "selected" by a hover effect — overriding the keyboard's selection.
+
+This hook starts with `mouseActive = false` and only flips to `true` on the first genuine `mousemove` event (detected via non-zero `movementX` or `movementY`). Until the mouse is active, hover-based selection is suppressed.
+
+## Import
+
+```ts
+import { useMouseInteraction } from "@/hooks/use-mouse-interaction";
+```
+
+## Returns
+
+| Property | Type | Description |
+|---|---|---|
+| `mouseActive` | `boolean` | Whether real mouse movement has been detected since mount. |
+| `onItemMouseMove` | `(index: number, setSelectedIndex: (fn: (i: number) => number) => void) => void` | Callback to attach to list items. Only updates the index when the mouse is genuinely active. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { useMouseInteraction } from "@/hooks/use-mouse-interaction";
+import { ListItem } from "@/components/list-item";
+
+export function ItemList({ items }: { items: string[] }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { onItemMouseMove } = useMouseInteraction();
+
+  return (
+    <div>
+      {items.map((item, i) => (
+        <ListItem
+          key={item}
+          index={i}
+          selected={i === selectedIndex}
+          onMouseMove={() => onItemMouseMove(i, setSelectedIndex)}
+        >
+          {item}
+        </ListItem>
+      ))}
+    </div>
+  );
+}
+```
+
+## How it works
+
+1. On mount, `mouseActive` is `false`.
+2. A global `mousemove` listener checks `e.movementX` and `e.movementY`.
+3. On the first event with non-zero movement, `mouseActive` flips to `true` permanently.
+4. `onItemMouseMove` only calls `setSelectedIndex` when `mouseActive` is `true`.
+
+This means keyboard navigation has clean control until the user genuinely moves their mouse.
+
+## Notes
+
+- Uses a `useRef` internally to avoid re-renders on every mouse move event.
+- `mouseActive` only transitions from `false` to `true`, never back. It represents "the user has used the mouse at least once."
+- The `onItemMouseMove` callback is stable (wrapped in `useCallback` with no deps).

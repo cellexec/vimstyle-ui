@@ -1,0 +1,66 @@
+---
+title: useFuzzyFilter
+description: Filters an array with fuzzy matching and resets the selected index on query change.
+---
+
+`useFuzzyFilter` is a convenience hook that wraps `fuzzyMatch` from `lib/fuzzy.ts`. It filters an array of items against a query string and resets the selected index to 0 whenever the query changes.
+
+## Import
+
+```ts
+import { useFuzzyFilter } from "@/hooks/use-fuzzy-filter";
+```
+
+## Parameters
+
+| Param | Type | Description |
+|---|---|---|
+| `items` | `T[]` | The full array of items to filter. |
+| `query` | `string` | The fuzzy search query. |
+| `keyFn` | `(item: T) => string` | Extracts the string to match against from each item. |
+| `setSelectedIndex` | `(fn: (i: number) => number) => void` | Setter for the selected index. Called with `() => 0` on query change. |
+
+## Returns
+
+`T[]` — The filtered array of items that match the query.
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { useFuzzyFilter } from "@/hooks/use-fuzzy-filter";
+
+interface Project {
+  id: string;
+  name: string;
+}
+
+export function ProjectList({ projects }: { projects: Project[] }) {
+  const [query, setQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const filtered = useFuzzyFilter(
+    projects,
+    query,
+    (p) => p.name,
+    setSelectedIndex
+  );
+
+  return (
+    <div>
+      {filtered.map((project) => (
+        <div key={project.id}>{project.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Notes
+
+- When `query` is empty, all items are returned unfiltered.
+- The filtered result is memoized with `useMemo` and only recomputes when `items`, `query`, or `keyFn` change.
+- The index reset runs in a `useEffect` keyed on `query`, so it fires after the render that changed the query.
+- Depends on `fuzzyMatch` from `@/lib/fuzzy`.

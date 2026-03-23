@@ -1,0 +1,59 @@
+---
+title: FocusOverlay
+description: Near-full-screen overlay panel for immersive content.
+---
+
+`FocusOverlay` renders a modal overlay that covers most of the screen. It includes a header with title, optional icon, and a close button with `Esc` hint. Adds `data-overlay-open` to the backdrop so other keyboard handlers can detect when an overlay is active.
+
+## Import
+
+```tsx
+import { FocusOverlay } from "@/components/focus-overlay";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | required | Whether the overlay is visible. |
+| `onClose` | `() => void` | required | Called when the overlay should close. |
+| `title` | `string` | required | Title displayed in the overlay header. |
+| `icon` | `ReactNode` | `undefined` | Optional icon rendered before the title. |
+| `children` | `ReactNode` | required | Overlay body content. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { FocusOverlay } from "@/components/focus-overlay";
+
+export function ChatPanel() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Open Chat</button>
+
+      <FocusOverlay
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Chat History"
+      >
+        <div className="p-6">
+          <p className="text-sm text-zinc-400">Your chat content here.</p>
+        </div>
+      </FocusOverlay>
+    </>
+  );
+}
+```
+
+## Notes
+
+- Closes on `Esc` keypress (registered in the capture phase) and on backdrop click.
+- The overlay uses responsive insets: `inset-4` on mobile, `inset-8` on medium screens, `inset-12` on large screens.
+- Renders with a `fade-in zoom-in-95` animation.
+- Returns `null` when `open` is `false` — no DOM nodes are rendered.
+- The `data-overlay-open` attribute on the backdrop is checked by `KbdButton` and `useVimNavigation` to suppress global shortcuts while the overlay is open.

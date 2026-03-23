@@ -1,0 +1,54 @@
+---
+title: VimPage
+description: Full-page layout with header, scrollable content, and bottom keyboard hints bar.
+---
+
+`VimPage` is the top-level layout wrapper for a vim-style page. It provides a fixed header with title/subtitle, a flex-1 scrollable content area, and an optional bottom bar that renders keyboard shortcut hints.
+
+## Import
+
+```tsx
+import { VimPage } from "@/components/vim-page";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | required | Page title displayed in the header. |
+| `subtitle` | `string` | `undefined` | Optional subtitle below the title. |
+| `hints` | `HintDef[]` | `undefined` | Array of keyboard hints for the bottom bar. |
+| `children` | `ReactNode` | required | Page content. |
+
+### HintDef
+
+```ts
+interface HintDef {
+  keys: string | string[];
+  label: string;
+}
+```
+
+## Usage
+
+```tsx
+<VimPage
+  title="Projects"
+  subtitle="All your active projects"
+  hints={[
+    { keys: ["j", "k"], label: "navigate" },
+    { keys: "/", label: "search" },
+    { keys: "Enter", label: "open" },
+    { keys: "n", label: "new" },
+    { keys: "Esc", label: "back" },
+  ]}
+>
+  {/* Your content here — typically a VimList */}
+</VimPage>
+```
+
+## Notes
+
+- The outer container is `h-full` and uses a column flex layout. The parent must have a defined height (e.g., `h-screen`).
+- The hints bar only renders when `hints` is provided and non-empty.
+- Each hint's `keys` can be a single string or an array of strings (rendered as multiple `KbdHint` badges).

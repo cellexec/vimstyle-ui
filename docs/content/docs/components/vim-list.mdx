@@ -1,0 +1,75 @@
+---
+title: VimList
+description: Navigable list panel combining a search bar with a scrollable item area.
+---
+
+`VimList` is a compound component that wraps a `SearchBar` with a scrollable container for list items. It renders as a rounded glass panel with a border.
+
+## Import
+
+```tsx
+import { VimList } from "@/components/vim-list";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | required | List content, typically `ListItem` and `SectionHeader` components. |
+| `query` | `string` | required | Current search query value. |
+| `onQueryChange` | `(q: string) => void` | required | Callback when the search query changes. |
+| `searchRef` | `RefObject<HTMLInputElement>` | required | Ref to the search input element. |
+| `searchFocused` | `boolean` | required | Whether the search input is currently focused. |
+| `onFocusChange` | `(focused: boolean) => void` | required | Callback when search focus state changes. |
+| `listRef` | `RefObject<HTMLDivElement>` | required | Ref to the scrollable list container. |
+| `placeholder` | `string` | `"Search..."` | Search input placeholder text. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { VimPage } from "@/components/vim-page";
+import { VimList } from "@/components/vim-list";
+import { ListItem } from "@/components/list-item";
+
+export default function ProjectsPage() {
+  const [query, setQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const searchRef = useRef<HTMLInputElement>(null!);
+  const listRef = useRef<HTMLDivElement>(null!);
+
+  const items = ["Alpha", "Bravo", "Charlie"];
+
+  return (
+    <VimPage title="Projects">
+      <VimList
+        query={query}
+        onQueryChange={setQuery}
+        searchRef={searchRef}
+        searchFocused={searchFocused}
+        onFocusChange={setSearchFocused}
+        listRef={listRef}
+      >
+        {items.map((item, i) => (
+          <ListItem
+            key={item}
+            index={i}
+            selected={i === selectedIndex}
+          >
+            {item}
+          </ListItem>
+        ))}
+      </VimList>
+    </VimPage>
+  );
+}
+```
+
+## Notes
+
+- `VimList` does not manage selection or keyboard navigation state. Pair it with `useVimNavigation` for full keyboard support.
+- The list container has `overflow-y-auto` and `min-h-0` so it scrolls within a flex parent.
+- The `listRef` is used by `useScrollIntoView` to auto-scroll the selected item into view.

@@ -1,0 +1,100 @@
+---
+title: useVimNavigation
+description: Core six-layer keyboard handler for vim-style navigation and interaction.
+---
+
+`useVimNavigation` is the central keyboard handler. It implements a six-layer input system where higher layers intercept keys before lower layers get a chance to act. This is what makes dialogs, overlays, editing mode, and search all work together without key conflicts.
+
+## Import
+
+```ts
+import { useVimNavigation } from "@/hooks/use-vim-navigation";
+```
+
+## The six layers
+
+Layers are checked in priority order (highest first). When a layer is active, it handles the key event and returns — lower layers never see it.
+
+| Layer | Condition | Keys handled | Behavior |
+|---|---|---|---|
+| 1. Save/Discard dialog | `showSaveDiscard` is true | `Enter`, `q`, `Esc` | Save, discard, or cancel |
+| 2. Confirm dialog | `confirmDialog` is true | `Enter`, `Esc` | Confirm or cancel |
+| 3. Overlay | `overlayOpen` is true | `Esc` | Close overlay |
+| 4. Editing mode | `editingId` is truthy | `Esc` | Exit edit (or prompt save if changes) |
+| 5. Search focused | `searchFocused` is true | `Esc` | Blur input and clear query |
+| 6. Normal navigation | Default | `j`/`k`, `Enter`, `/`, `Esc`, custom | Navigate, select, search, escape |
+
+## Parameters
+
+| Param | Type | Required | Description |
+|---|---|---|---|
+| `items` | `unknown[]` | yes | The array of items being navigated. Used for bounds checking. |
+| `selectedIndex` | `number` | yes | Current selected index. |
+| `setSelectedIndex` | `(fn: (i: number) => number) => void` | yes | Setter for selected index (functional updater). |
+| `searchFocused` | `boolean` | yes | Whether the search input is focused. |
+| `setSearchFocused` | `(v: boolean) => void` | yes | Setter for search focus. |
+| `query` | `string` | yes | Current search query. |
+| `setQuery` | `(v: string) => void` | yes | Setter for search query. |
+| `searchRef` | `RefObject<HTMLInputElement \| null>` | yes | Ref to the search input. |
+| `onSelect` | `(index: number) => void` | no | Called on `Enter` in normal mode. |
+| `onEscape` | `() => void` | no | Called on `Esc` in normal mode. |
+| `editingId` | `string \| null` | no | ID of item being edited (truthy = editing layer active). |
+| `hasChanges` | `boolean` | no | Whether the edited item has unsaved changes. |
+| `onSave` | `() => void` | no | Save handler for editing layer. |
+| `onExitEdit` | `() => void` | no | Called when exiting edit mode without changes. |
+| `showSaveDiscard` | `boolean` | no | Whether the save/discard dialog is open. |
+| `setShowSaveDiscard` | `(v: boolean) => void` | no | Setter for save/discard dialog visibility. |
+| `onDiscard` | `() => void` | no | Discard handler for save/discard dialog. |
+| `confirmDialog` | `boolean` | no | Whether the confirm dialog is open. |
+| `setConfirmDialog` | `(v: boolean) => void` | no | Setter for confirm dialog visibility. |
+| `onConfirm` | `() => void` | no | Confirm handler. |
+| `overlayOpen` | `boolean` | no | Whether a focus overlay is open. |
+| `setOverlayOpen` | `(v: boolean) => void` | no | Setter for overlay visibility. |
+| `shortcuts` | `Record<string, () => void>` | no | Extra key bindings for normal mode. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { useVimNavigation } from "@/hooks/use-vim-navigation";
+import { useFuzzyFilter } from "@/hooks/use-fuzzy-filter";
+
+export function ProjectList({ projects }: { projects: Project[] }) {
+  const [query, setQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null!);
+
+  const filtered = useFuzzyFilter(
+    projects, query, (p) => p.name, setSelectedIndex
+  );
+
+  useVimNavigation({
+    items: filtered,
+    selectedIndex,
+    setSelectedIndex,
+    searchFocused,
+    setSearchFocused,
+    query,
+    setQuery,
+    searchRef,
+    onSelect: (i) => openProject(filtered[i]),
+    onEscape: () => router.back(),
+    shortcuts: {
+      n: () => createProject(),
+      d: () => setConfirmDialog(true),
+    },
+  });
+
+  // ... render VimPage + VimList
+}
+```
+
+## Notes
+
+- The handler is registered on `window` in the **capture** phase so it runs before React synthetic event handlers.
+- Only pass the layers you need. If you don't have editing or dialogs, simply omit those parameters.
+- The `setSelectedIndex` updater uses a functional form `(i) => ...` to avoid stale closures.
+- Arrow keys (`ArrowDown`/`ArrowUp`) work in addition to `j`/`k` in normal mode.

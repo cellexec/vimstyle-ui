@@ -1,0 +1,65 @@
+---
+title: ConfirmDialog
+description: Centered confirmation modal with Enter to confirm and Esc to cancel.
+---
+
+`ConfirmDialog` renders a centered modal with a title, description, and two buttons. It registers keyboard handlers for `Enter` (confirm) and `Esc` (cancel) in the capture phase. Adds `data-overlay-open` to suppress global shortcuts.
+
+## Import
+
+```tsx
+import { ConfirmDialog } from "@/components/confirm-dialog";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | required | Whether the dialog is visible. |
+| `onConfirm` | `() => void` | required | Called when user confirms (Enter or button click). |
+| `onCancel` | `() => void` | required | Called when user cancels (Esc or button click). |
+| `title` | `string` | required | Dialog title. |
+| `description` | `string` | required | Explanatory text below the title. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+
+export function DeleteButton({ onDelete }: { onDelete: () => void }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Delete</button>
+
+      <ConfirmDialog
+        open={open}
+        onConfirm={() => {
+          onDelete();
+          setOpen(false);
+        }}
+        onCancel={() => setOpen(false)}
+        title="Delete project?"
+        description="This action cannot be undone. The project and all its data will be permanently removed."
+      />
+    </>
+  );
+}
+```
+
+## Keyboard behavior
+
+| Key | Action |
+|---|---|
+| `Enter` | Fires `onConfirm` |
+| `Esc` | Fires `onCancel` |
+
+## Notes
+
+- Returns `null` when `open` is `false`.
+- Backdrop click fires `onCancel`.
+- Key handlers use `stopPropagation` in the capture phase so they don't leak to `useVimNavigation`.

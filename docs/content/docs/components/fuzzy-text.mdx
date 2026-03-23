@@ -1,0 +1,49 @@
+---
+title: FuzzyText
+description: Highlights fuzzy-matched characters in a text string.
+---
+
+`FuzzyText` renders a string and highlights the characters that match a fuzzy query. Uses the `fuzzyIndices` utility from `lib/fuzzy.ts` to determine which characters to highlight.
+
+## Import
+
+```tsx
+import { FuzzyText } from "@/components/fuzzy-text";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `text` | `string` | required | The full text to display. |
+| `query` | `string` | required | The fuzzy search query. |
+| `className` | `string` | `undefined` | CSS classes for the outer `<span>`. |
+| `highlightClass` | `string` | `"text-violet-300 font-semibold"` | Tailwind classes applied to matched characters. |
+
+## Usage
+
+```tsx
+<FuzzyText
+  text="ProjectAlpha"
+  query="pral"
+  className="text-sm text-zinc-200"
+/>
+```
+
+This renders "ProjectAlpha" with the characters `P`, `r`, `a`, `l` highlighted in violet.
+
+```tsx
+{/* Custom highlight color */}
+<FuzzyText
+  text="Settings"
+  query="stg"
+  highlightClass="text-amber-300 font-bold"
+/>
+```
+
+## Notes
+
+- When `query` is empty, the text renders without any highlighting.
+- When the query does not match the text at all, the text renders plain (no error).
+- Matching is case-insensitive and respects character order (standard fuzzy matching).
+- Depends on `fuzzyIndices` from `@/lib/fuzzy`.

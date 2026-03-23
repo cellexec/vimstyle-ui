@@ -1,0 +1,62 @@
+---
+title: Installation
+description: Three ways to get vimstyle-ui components into your project.
+---
+
+## Prerequisites
+
+- Next.js 14+ (App Router)
+- React 19+
+- Tailwind CSS v4
+- Bun (preferred) or npm/pnpm
+
+## Fork & Clone (recommended)
+
+The intended workflow. Fork the repo, clone your fork, and the components are yours.
+
+```bash
+# Fork on GitHub first, then:
+git clone https://github.com/YOUR_USERNAME/vimstyle-ui.git
+cd vimstyle-ui
+bun install
+```
+
+Components live in `registry/components/`, hooks in `registry/hooks/`, and utilities in `registry/lib/`. Copy what you need into your Next.js project's `components/`, `hooks/`, and `lib/` directories.
+
+```bash
+# Example: copy the core components into your project
+cp registry/components/vim-page.tsx your-app/components/
+cp registry/components/vim-list.tsx your-app/components/
+cp registry/hooks/use-vim-navigation.ts your-app/hooks/
+cp registry/lib/fuzzy.ts your-app/lib/
+```
+
+## CLI
+
+Use the CLI to copy individual components into your project:
+
+```bash
+# Initialize vimstyle-ui in your project (sets up paths)
+bunx vimstyle-ui init
+
+# Add a specific component
+bunx vimstyle-ui add vim-page
+
+# Add a hook
+bunx vimstyle-ui add use-vim-navigation
+
+# Add multiple at once
+bunx vimstyle-ui add vim-page vim-list search-bar use-vim-navigation
+```
+
+The CLI copies the source files directly into your project. No runtime dependency is installed.
+
+## Claude Code skill only
+
+If you just want the AI patterns without the component files, install the Claude Code skill:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/cellexec/skill_vimstyle/main/install.sh)
+```
+
+This installs the skill file at `.claude/skills/vimstyle-ui/SKILL.md` in your project. Claude Code will then understand the vimstyle-ui patterns and can generate components that follow the design system, even without the registry files present.

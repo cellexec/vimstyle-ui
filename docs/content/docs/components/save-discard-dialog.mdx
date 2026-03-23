@@ -1,0 +1,70 @@
+---
+title: SaveDiscardDialog
+description: Three-action modal for unsaved changes with Save, Discard, and Cancel.
+---
+
+`SaveDiscardDialog` renders a modal with three actions for handling unsaved changes. It registers keyboard handlers for `Enter` (save), `q` (discard), and `Esc` (cancel). Adds `data-overlay-open` to suppress global shortcuts.
+
+## Import
+
+```tsx
+import { SaveDiscardDialog } from "@/components/save-discard-dialog";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | `boolean` | required | Whether the dialog is visible. |
+| `onSave` | `() => void` | required | Called when user saves (Enter or button click). |
+| `onDiscard` | `() => void` | required | Called when user discards (q or button click). |
+| `onCancel` | `() => void` | required | Called when user cancels (Esc or button click). |
+| `title` | `string` | `"Unsaved changes"` | Dialog title. |
+| `description` | `string` | `"You have unsaved changes. What would you like to do?"` | Explanatory text. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SaveDiscardDialog } from "@/components/save-discard-dialog";
+
+export function Editor() {
+  const [showDialog, setShowDialog] = useState(false);
+
+  return (
+    <>
+      {/* Editor content... */}
+
+      <SaveDiscardDialog
+        open={showDialog}
+        onSave={() => {
+          saveChanges();
+          setShowDialog(false);
+        }}
+        onDiscard={() => {
+          discardChanges();
+          setShowDialog(false);
+        }}
+        onCancel={() => setShowDialog(false)}
+      />
+    </>
+  );
+}
+```
+
+## Keyboard behavior
+
+| Key | Action | Button color |
+|---|---|---|
+| `Enter` | Fires `onSave` | Violet (primary) |
+| `q` | Fires `onDiscard` | Red (destructive) |
+| `Esc` | Fires `onCancel` | Default (secondary) |
+
+## Notes
+
+- This dialog is layer 1 in the `useVimNavigation` keyboard stack — it has the highest priority.
+- Both `q` and `Q` trigger discard.
+- The discard button uses a red tint (`bg-red-500/[0.08]`) to signal destructive intent.
+- Returns `null` when `open` is `false`.

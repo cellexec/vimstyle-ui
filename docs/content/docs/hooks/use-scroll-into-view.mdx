@@ -1,0 +1,61 @@
+---
+title: useScrollIntoView
+description: Auto-scrolls the selected item into the visible area of a scroll container.
+---
+
+`useScrollIntoView` keeps the currently selected list item visible by scrolling it into view whenever `selectedIndex` changes. It targets elements with a `data-item-index` attribute matching the index inside the provided container ref.
+
+## Import
+
+```ts
+import { useScrollIntoView } from "@/hooks/use-scroll-into-view";
+```
+
+## Parameters
+
+| Param | Type | Description |
+|---|---|---|
+| `listRef` | `RefObject<HTMLElement \| null>` | Ref to the scrollable container (e.g., the `VimList` scroll area). |
+| `selectedIndex` | `number` | The currently selected item index. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { useScrollIntoView } from "@/hooks/use-scroll-into-view";
+
+export function ScrollableList({ items }: { items: string[] }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const listRef = useRef<HTMLDivElement>(null!);
+
+  useScrollIntoView(listRef, selectedIndex);
+
+  return (
+    <div ref={listRef} className="h-64 overflow-y-auto">
+      {items.map((item, i) => (
+        <div
+          key={item}
+          data-item-index={i}
+          className={i === selectedIndex ? "bg-violet-500/10" : ""}
+        >
+          {item}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## How it works
+
+1. On each `selectedIndex` change, queries the container for `[data-item-index="N"]`.
+2. If found, calls `element.scrollIntoView({ block: "nearest", behavior: "smooth" })`.
+3. `block: "nearest"` means the container only scrolls if the element is outside the visible area.
+
+## Notes
+
+- Works with `ListItem` out of the box — `ListItem` sets `data-item-index` automatically via its `index` prop.
+- The scroll behavior is `smooth` for a polished feel. This can cause slight lag on very rapid j/k navigation — a tradeoff favoring visual polish.
+- If the container ref is `null` (not yet mounted), the hook is a no-op.

@@ -1,0 +1,24 @@
+---
+title: Philosophy
+description: The design principles behind vimstyle-ui.
+---
+
+vimstyle-ui is built on two core principles and one bet on the future.
+
+## "You clone it, you own it"
+
+This is not an npm package you install and pray the maintainer doesn't break. You clone this repo, you fork it, and now it's yours. Every component lives in your codebase as plain files. Modify them freely. No version lock-in, no breaking upgrades, no dependency hell. Ship what you control.
+
+The shadcn model proved that developers prefer owning their UI code over depending on opaque packages. vimstyle-ui takes the same approach — every component is a single file with zero internal abstractions. Read it, understand it, change it.
+
+## "Terminal first"
+
+The terminal is the center of the developer workflow. The UI components are keyboard-first by design — `j`/`k` to navigate, `/` to search, `Enter` to act, `Esc` to go back. The docs run locally with `bun run dev`. The CLI copies components into your project from the terminal. Everything flows through the keyboard.
+
+Mouse support exists but is secondary. The `useMouseInteraction` hook deliberately suppresses hover effects until the user actually moves the mouse, so keyboard navigation never fights with accidental pointer events.
+
+## AI-native development
+
+The repo ships with a Claude Code skill (`.claude/skills/vimstyle-ui/SKILL.md`). When you work on your fork with Claude Code, it understands the full pattern system — layout, navigation layers, component APIs. Ask it to "build a vim-style page" and it knows exactly what to do.
+
+Fork the skill too — tune it for your own design language. The skill file is plain Markdown that describes the architecture, the six keyboard layers, and the component composition patterns. When you change the components, update the skill and your AI assistant stays in sync.

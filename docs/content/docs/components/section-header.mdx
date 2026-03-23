@@ -1,0 +1,48 @@
+---
+title: SectionHeader
+description: Sticky group label for sectioned lists.
+---
+
+`SectionHeader` renders a sticky header that pins to the top of its scroll container. It uses a blurred dark background so list content scrolls cleanly underneath.
+
+## Import
+
+```tsx
+import { SectionHeader } from "@/components/section-header";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | required | Header label text. |
+
+## Usage
+
+```tsx
+<VimList {...listProps}>
+  <SectionHeader>Active</SectionHeader>
+  {activeItems.map((item, i) => (
+    <ListItem key={item.id} index={i} selected={i === selectedIndex}>
+      {item.name}
+    </ListItem>
+  ))}
+
+  <SectionHeader>Archived</SectionHeader>
+  {archivedItems.map((item, i) => (
+    <ListItem
+      key={item.id}
+      index={activeItems.length + i}
+      selected={activeItems.length + i === selectedIndex}
+    >
+      {item.name}
+    </ListItem>
+  ))}
+</VimList>
+```
+
+## Notes
+
+- The header is styled with uppercase 11px text in `zinc-500` for a subtle section divider look.
+- Uses `sticky top-0 z-10` and `backdrop-blur-sm` so it stays pinned while content scrolls behind it.
+- The bottom border is very subtle (`border-white/[0.04]`) to separate it from list items below.
