@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "cd docs && bun run dev",
-    "build": "cd docs && bun run build",
+    "dev": "cd docs && bun install && bun run dev",
+    "build": "cd docs && bun install && bun run build",
     "cli": "bun run bin/cli.ts"
   },
   "bin": {

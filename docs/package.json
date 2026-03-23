@@ -3,20 +3,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start"
   },
   "dependencies": {
-    "fumadocs-core": "latest",
-    "fumadocs-mdx": "latest",
-    "fumadocs-ui": "latest",
-    "next": "^16.2.1-canary.5",
-    "react": "^19.3.0-canary-8b2e903a-20260320",
-    "react-dom": "^19.3.0-canary-8b2e903a-20260320"
+    "fumadocs-core": "^16",
+    "fumadocs-mdx": "^14",
+    "fumadocs-ui": "^16",
+    "next": "^16",
+    "react": "^19.3.0-canary",
+    "react-dom": "^19.3.0-canary"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "25.5.0",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8",
