@@ -4,7 +4,22 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-exec claude --append-system-prompt "When you receive the first message, print a welcome screen and then ask what the user wants to work on. The welcome screen should look exactly like this:
+if [ ! -f accept ]; then
+  echo ""
+  echo "⚠  WARNING: This script runs Claude Code with --dangerously-skip-permissions."
+  echo "   All tool calls will be auto-approved without confirmation."
+  echo ""
+  echo "   To suppress this warning, create an 'accept' file:"
+  echo "     touch accept"
+  echo ""
+  read -r -p "Continue? [y/N] " response
+  case "$response" in
+    [yY][eE][sS]|[yY]) ;;
+    *) echo "Aborted."; exit 1 ;;
+  esac
+fi
+
+exec claude --dangerously-skip-permissions --append-system-prompt "When you receive the first message, print a welcome screen and then ask what the user wants to work on. The welcome screen should look exactly like this:
 
 ───────────────────────────────────────
   vimstyle-ui
