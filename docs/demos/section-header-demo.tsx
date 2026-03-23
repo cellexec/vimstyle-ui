@@ -2,11 +2,11 @@
 
 import React from "react";
 import { SectionHeader } from "@/components/section-header";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function SectionHeaderDemo() {
   return (
-    <ComponentPreview>
+    <Showcase>
       <div className="max-h-[200px] overflow-y-auto">
         <SectionHeader>Active Projects</SectionHeader>
         <div className="px-6 py-3 text-sm text-zinc-400">Project Alpha</div>
@@ -14,6 +14,6 @@ export function SectionHeaderDemo() {
         <SectionHeader>Archived</SectionHeader>
         <div className="px-6 py-3 text-sm text-zinc-400">Old Project</div>
       </div>
-    </ComponentPreview>
+    </Showcase>
   );
 }

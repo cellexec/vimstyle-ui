@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { FocusOverlay } from "@/components/focus-overlay";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function FocusOverlayDemo() {
   const [open, setOpen] = useState(false);
 
   return (
-    <ComponentPreview>
+    <Showcase hints={[{ keys: "Esc", label: "close overlay" }]}>
       <div className="flex flex-col items-center gap-3 p-8">
         <button
           onClick={() => setOpen(true)}
@@ -51,6 +51,6 @@ export function FocusOverlayDemo() {
           </p>
         </div>
       </FocusOverlay>
-    </ComponentPreview>
+    </Showcase>
   );
 }
