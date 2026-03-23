@@ -31,15 +31,27 @@ export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
 
   const dismiss = useCallback(() => setHintsOpen(false), []);
 
-  // Dismiss on any listed key press or Escape
+  // Toggle on ? key, dismiss on any listed key or Escape
   useEffect(() => {
-    if (!hintsOpen) return;
+    if (!hints || hints.length === 0) return;
     const handler = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if (isInput || (e.target as HTMLElement)?.isContentEditable) return;
+
+      if (!hintsOpen) {
+        if (e.key === "?" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          setHintsOpen(true);
+        }
+        return;
+      }
+
       if (
         e.key === "Escape" ||
-        allKeys.some(
-          (k) => k.toLowerCase() === e.key.toLowerCase()
-        )
+        e.key === "?" ||
+        allKeys.some((k) => k.toLowerCase() === e.key.toLowerCase())
       ) {
         e.preventDefault();
         dismiss();
@@ -47,7 +59,7 @@ export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
     };
     window.addEventListener("keydown", handler, true);
     return () => window.removeEventListener("keydown", handler, true);
-  }, [hintsOpen, allKeys, dismiss]);
+  }, [hintsOpen, hints, allKeys, dismiss]);
 
   return (
     <div className="not-prose my-10">
