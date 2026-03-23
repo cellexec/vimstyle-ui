@@ -1,0 +1,58 @@
+---
+title: YankIndicator
+description: Floating indicator for yank mode — shows typed input and copy confirmation.
+---
+
+`YankIndicator` is a fixed-position bar that appears during yank mode and briefly after a successful copy. It uses amber for the active state and green for the confirmation flash.
+
+## Import
+
+```tsx
+import { YankIndicator } from "@/components/yank-indicator";
+```
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `active` | `boolean` | Whether yank mode is active. |
+| `typed` | `string` | Characters typed so far. |
+| `lastYanked` | `YankTarget \| null` | Most recently yanked target. Shows confirmation when set. |
+
+## Visual states
+
+| State | Appearance |
+|---|---|
+| Active, no input | Amber border, "YANK type to copy... Esc to cancel" |
+| Active, typing | Amber border, "YANK" + typed chars with blinking cursor |
+| Confirmation | Green border, "Copied" + truncated label |
+| Inactive | Hidden (returns null) |
+
+## Usage
+
+```tsx
+import { useYankMode } from "@/hooks/use-yank-mode";
+import { YankIndicator } from "@/components/yank-indicator";
+
+function MyPage() {
+  const { active, typed, lastYanked } = useYankMode({
+    targets: [
+      { key: "1", label: "Item One", value: "value-1" },
+      { key: "2", label: "Item Two", value: "value-2" },
+    ],
+  });
+
+  return (
+    <>
+      {/* ... page content ... */}
+      <YankIndicator active={active} typed={typed} lastYanked={lastYanked} />
+    </>
+  );
+}
+```
+
+## Notes
+
+- Returns `null` when both `active` is false and `lastYanked` is null.
+- The confirmation label is truncated at 200px to prevent overflow.
+- Uses `z-[9999]` to float above all content.

@@ -1,12 +1,6 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { resolve, dirname, basename } from "path";
-import {
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  existsSync,
-  readdirSync,
-} from "fs";
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from "fs";
 
 // ── ANSI helpers ──────────────────────────────────────────────────────────────
 const green = (s: string) => `\x1b[32m${s}\x1b[0m`;
@@ -14,6 +8,11 @@ const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;
 const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
 const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
+const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
+
+// ── Config ───────────────────────────────────────────────────────────────────
+const GITHUB_RAW =
+  "https://raw.githubusercontent.com/cellexec/vimstyle-ui/main";
 
 // ── Registry ──────────────────────────────────────────────────────────────────
 type RegistryEntry = { file: string; deps: string[] };
@@ -73,6 +72,14 @@ const REGISTRY: Record<string, RegistrySection> = {
       file: "registry/components/nav-indicator.tsx",
       deps: [],
     },
+    "yank-indicator": {
+      file: "registry/components/yank-indicator.tsx",
+      deps: ["use-yank-mode"],
+    },
+    yankable: {
+      file: "registry/components/yankable.tsx",
+      deps: [],
+    },
   },
   hooks: {
     "use-vim-navigation": {
@@ -94,6 +101,10 @@ const REGISTRY: Record<string, RegistrySection> = {
     "use-nav-hints": {
       file: "registry/hooks/use-nav-hints.ts",
       deps: [],
+    },
+    "use-yank-mode": {
+      file: "registry/hooks/use-yank-mode.ts",
+      deps: ["use-nav-hints"],
     },
   },
   layouts: {
@@ -150,22 +161,44 @@ const REGISTRY: Record<string, RegistrySection> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Resolve the root of the vimstyle-ui repo (where `registry/` lives). */
-function findRegistryRoot(): string {
-  // Walk up from the CLI script itself
+/** Try to find a local registry/ directory (for development). */
+function findLocalRegistry(): string | null {
   let dir = dirname(resolve(process.argv[1]));
   for (let i = 0; i < 10; i++) {
     if (existsSync(resolve(dir, "registry"))) return dir;
     dir = dirname(dir);
   }
-  console.error(
-    "\x1b[31mError:\x1b[0m Could not find registry/ directory. Are you running from the vimstyle-ui repo?"
-  );
-  process.exit(1);
+  return null;
+}
+
+/** Read a file from local registry or fetch from GitHub. */
+async function readRegistryFile(
+  registryPath: string,
+  localRoot: string | null
+): Promise<string | null> {
+  // Prefer local files when running from the repo
+  if (localRoot) {
+    const localFile = resolve(localRoot, registryPath);
+    if (existsSync(localFile)) {
+      return readFileSync(localFile, "utf-8");
+    }
+  }
+
+  // Fetch from GitHub
+  const url = `${GITHUB_RAW}/${registryPath}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
 }
 
 /** Find an entry across all registry sections. */
-function findEntry(name: string): { section: string; entry: RegistryEntry } | null {
+function findEntry(
+  name: string
+): { section: string; entry: RegistryEntry } | null {
   for (const [section, entries] of Object.entries(REGISTRY)) {
     if (entries[name]) return { section, entry: entries[name] };
   }
@@ -214,14 +247,20 @@ function collectDeps(names: string[], seen = new Set<string>()): string[] {
 
 // ── Commands ──────────────────────────────────────────────────────────────────
 
-function cmdInit() {
-  const registryRoot = findRegistryRoot();
+async function cmdInit() {
+  const localRoot = findLocalRegistry();
   const cwd = process.cwd();
+  const source = localRoot ? "local" : "github";
 
-  console.log(`\n${bold("vimstyle-ui")} ${dim("init")}\n`);
+  console.log(`\n${bold("vimstyle-ui")} ${dim("init")} ${dim(`(${source})`)}\n`);
 
   // Create target directories
-  const dirs = ["components/vimstyle", "hooks/vimstyle", "layouts/vimstyle", "lib/vimstyle"];
+  const dirs = [
+    "components/vimstyle",
+    "hooks/vimstyle",
+    "layouts/vimstyle",
+    "lib/vimstyle",
+  ];
   for (const d of dirs) {
     const full = resolve(cwd, d);
     mkdirSync(full, { recursive: true });
@@ -229,26 +268,26 @@ function cmdInit() {
   }
 
   // Copy fuzzy.ts
-  const fuzzySource = resolve(registryRoot, "registry/lib/fuzzy.ts");
-  const fuzzyTarget = resolve(cwd, "lib/vimstyle/fuzzy.ts");
-  if (existsSync(fuzzySource)) {
-    const content = rewriteImports(readFileSync(fuzzySource, "utf-8"));
-    writeFileSync(fuzzyTarget, content);
+  const fuzzyContent = await readRegistryFile("registry/lib/fuzzy.ts", localRoot);
+  if (fuzzyContent) {
+    const fuzzyTarget = resolve(cwd, "lib/vimstyle/fuzzy.ts");
+    writeFileSync(fuzzyTarget, rewriteImports(fuzzyContent));
     console.log(`  ${green("\u2713")} ${dim("copied")}  lib/vimstyle/fuzzy.ts`);
   } else {
-    console.log(`  ${yellow("!")} ${dim("registry/lib/fuzzy.ts not found, skipping")}`);
+    console.log(`  ${yellow("!")} ${dim("could not fetch fuzzy.ts, skipping")}`);
   }
 
   console.log(`\n${green("Done!")} vimstyle-ui initialized.\n`);
   console.log(
-    `  Next: ${cyan("vimstyle-ui add vim-page use-vim-navigation")}\n`
+    `  Next: ${cyan("npx vimstyle-ui add vim-page use-vim-navigation")}\n`
   );
 }
 
-function cmdAdd(args: string[]) {
-  const registryRoot = findRegistryRoot();
+async function cmdAdd(args: string[]) {
+  const localRoot = findLocalRegistry();
   const cwd = process.cwd();
   const addAll = args.includes("--all");
+  const source = localRoot ? "local" : "github";
 
   let names: string[];
 
@@ -259,11 +298,9 @@ function cmdAdd(args: string[]) {
   } else {
     names = args.filter((a) => !a.startsWith("-"));
     if (names.length === 0) {
-      console.error(
-        "\x1b[31mError:\x1b[0m Specify component names or use --all.\n"
-      );
-      console.log(`  Usage: ${cyan("vimstyle-ui add <component> [...]")}`);
-      console.log(`         ${cyan("vimstyle-ui add --all")}\n`);
+      console.error(`${red("Error:")} Specify component names or use --all.\n`);
+      console.log(`  Usage: ${cyan("npx vimstyle-ui add <component> [...]")}`);
+      console.log(`         ${cyan("npx vimstyle-ui add --all")}\n`);
       process.exit(1);
     }
 
@@ -271,8 +308,8 @@ function cmdAdd(args: string[]) {
     for (const name of names) {
       if (!findEntry(name)) {
         console.error(
-          `\x1b[31mError:\x1b[0m Unknown component "${name}". Run ${cyan(
-            "vimstyle-ui list"
+          `${red("Error:")} Unknown component "${name}". Run ${cyan(
+            "npx vimstyle-ui list"
           )} to see available items.\n`
         );
         process.exit(1);
@@ -283,38 +320,48 @@ function cmdAdd(args: string[]) {
   // Resolve deps
   const resolved = collectDeps(names);
 
-  console.log(`\n${bold("vimstyle-ui")} ${dim("add")}\n`);
+  console.log(
+    `\n${bold("vimstyle-ui")} ${dim("add")} ${dim(`(${source})`)}\n`
+  );
 
   const copied: string[] = [];
+  const failed: string[] = [];
 
   for (const name of resolved) {
     const found = findEntry(name);
     if (!found) continue;
 
     const { section, entry } = found;
-    const sourceFile = resolve(registryRoot, entry.file);
     const fileName = basename(entry.file);
     const target = resolve(cwd, targetDir(section), fileName);
 
-    if (!existsSync(sourceFile)) {
-      console.log(
-        `  ${yellow("!")} ${dim("source missing:")} ${entry.file}`
-      );
+    const content = await readRegistryFile(entry.file, localRoot);
+    if (!content) {
+      console.log(`  ${yellow("!")} ${dim("failed to fetch:")} ${name}`);
+      failed.push(name);
       continue;
     }
 
     mkdirSync(dirname(target), { recursive: true });
-
-    const content = rewriteImports(readFileSync(sourceFile, "utf-8"));
-    writeFileSync(target, content);
+    writeFileSync(target, rewriteImports(content));
 
     const relTarget = `${targetDir(section)}/${fileName}`;
     console.log(`  ${green("\u2713")} ${name} ${dim(`\u2192 ${relTarget}`)}`);
     copied.push(name);
   }
 
+  if (failed.length > 0) {
+    console.log(
+      `\n${yellow("Warning:")} ${failed.length} item${
+        failed.length === 1 ? "" : "s"
+      } failed to fetch.\n`
+    );
+  }
+
   console.log(
-    `\n${green("Done!")} Added ${copied.length} item${copied.length === 1 ? "" : "s"}.\n`
+    `\n${green("Done!")} Added ${copied.length} item${
+      copied.length === 1 ? "" : "s"
+    }.\n`
   );
 }
 
@@ -326,7 +373,9 @@ function cmdList() {
     console.log(`  ${bold(label)}`);
     for (const [name, entry] of Object.entries(entries)) {
       const deps =
-        entry.deps.length > 0 ? dim(` (deps: ${entry.deps.join(", ")})`) : "";
+        entry.deps.length > 0
+          ? dim(` (deps: ${entry.deps.join(", ")})`)
+          : "";
       console.log(`    ${cyan(name.padEnd(24))}${dim(entry.file)}${deps}`);
     }
     console.log();
@@ -342,6 +391,10 @@ ${bold("Usage:")}
   vimstyle-ui ${cyan("add")} <component>   Add a component to your project
   vimstyle-ui ${cyan("add")} --all         Add all components
   vimstyle-ui ${cyan("list")}              List available components
+
+${bold("Works anywhere:")}
+  npx vimstyle-ui add vim-page     ${dim("# fetches from GitHub")}
+  bunx vimstyle-ui add vim-page    ${dim("# same thing, bun style")}
 `);
 }
 
@@ -365,7 +418,7 @@ switch (command) {
     printUsage();
     break;
   default:
-    console.error(`\x1b[31mUnknown command:\x1b[0m ${command}\n`);
+    console.error(`${red("Unknown command:")} ${command}\n`);
     printUsage();
     process.exit(1);
 }

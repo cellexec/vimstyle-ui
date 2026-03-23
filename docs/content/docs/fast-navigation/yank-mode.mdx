@@ -1,0 +1,85 @@
+---
+title: Yank Mode
+description: Press y to copy values from any item — vim-style yanking for the web.
+---
+
+Yank mode brings vim's `y` (yank/copy) command to the browser. Press `y` to enter yank mode, hint badges appear on each yankable item, type the shortest unique prefix to copy that item's value to the clipboard. No right-click menus, no selecting text, no Ctrl+C.
+
+## How it works
+
+1. **Consumer defines targets** — each item declares a `label` (for hint computation) and a `value` (what gets copied).
+2. **Press `y`** — yank mode activates. Hint prefixes appear on each target.
+3. **Type the prefix** — as you type, non-matching items dim. The moment your input uniquely matches one target, its `value` is copied to clipboard.
+4. **Confirmation** — a green "Copied: Label" flash appears briefly, then fades.
+
+## Example: project list with copyable URLs
+
+```tsx
+"use client";
+
+import { ListLayout } from "@/layouts/list-layout";
+import { useYankMode } from "@/hooks/use-yank-mode";
+import { YankIndicator } from "@/components/yank-indicator";
+
+const projects = [
+  { id: "1", name: "API Gateway", url: "https://github.com/org/api" },
+  { id: "2", name: "Mobile App", url: "https://github.com/org/mobile" },
+  { id: "3", name: "Dashboard", url: "https://github.com/org/dash" },
+];
+
+export default function ProjectsPage() {
+  const { active, typed, hints, matching, lastYanked } = useYankMode({
+    targets: projects.map((p) => ({
+      key: p.id,
+      label: p.name,
+      value: p.url,
+    })),
+  });
+
+  return (
+    <div className="h-screen">
+      <ListLayout
+        title="Projects"
+        items={projects}
+        keyFn={(p) => p.name}
+        onSelect={(p) => window.open(p.url)}
+        hints={[
+          { keys: ["j", "k"], label: "navigate" },
+          { keys: "y", label: "copy url" },
+          { keys: "Enter", label: "open" },
+        ]}
+      />
+      <YankIndicator active={active} typed={typed} lastYanked={lastYanked} />
+    </div>
+  );
+}
+```
+
+The keyboard hints bar shows `y copy url` alongside the standard navigation hints. Users discover the feature through the hint bar and build muscle memory.
+
+## What to yank
+
+The `value` is up to the consumer. Some patterns:
+
+- **URLs** — copy repo links, API endpoints, page URLs
+- **IDs** — copy record identifiers for use in terminals or APIs
+- **Commands** — copy git commands, CLI invocations
+- **Code snippets** — copy import statements, component usage
+- **File paths** — copy source file locations
+
+## Composing with other modes
+
+Yank mode uses `y` as its activation key. Space-motion uses `Space`. Standard vim navigation uses `j`/`k`/`/`/`Enter`/`Esc`. They all coexist on the same page without conflicts:
+
+```tsx
+// All three active simultaneously
+const nav = useNavHints({ items: navItems, onMatch: (item) => router.push(item.key) });
+const yank = useYankMode({ targets: yankTargets });
+// useVimNavigation handles j/k/Enter/Esc/search
+```
+
+## Implementation
+
+- **Hook:** [useYankMode](/docs/hooks/use-yank-mode) — activation, hints, clipboard, confirmation state
+- **Indicator:** [YankIndicator](/docs/components/yank-indicator) — floating bar with amber active / green confirmation
+- **Shared:** Reuses [computeHints](/docs/hooks/use-nav-hints) from useNavHints for prefix computation
