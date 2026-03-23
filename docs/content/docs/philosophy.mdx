@@ -3,7 +3,15 @@ title: Philosophy
 description: The design principles behind vimstyle-ui.
 ---
 
-vimstyle-ui is built on two core principles and one bet on the future.
+vimstyle-ui is built on a personal discovery, three design principles, and a bet on the future.
+
+## Why this exists
+
+This project started from learning Neovim and realizing how much faster keyboard-driven interaction can be. Once you internalize the patterns — navigation, search, actions — using a mouse starts to feel like a detour. The keyboard becomes muscle memory. It's hard to learn at first, but once applied it's self-improving by design: the more you use it, the faster you get.
+
+The core insight is **divide and conquer** — the same principle taught in computer science, applied to UI navigation. We think of our interfaces as a tree of information. At the top level sit the highest "objects" or "concepts" in your app — settings, dashboard, a list of projects. Each of those has sub-routes, and those have detail views. Navigate the tree with the keyboard: Space to jump between top-level nodes, `j`/`k` to move within a list, `/` to search, `Enter` to drill in, `Esc` to go back up.
+
+This isn't about making apps only for power users. It's about making apps **usable for everyone and efficient for those who want it**. The mouse works fine. Touch works fine. But for users who type with ten fingers and want speed, the keyboard layer is there — and it rewards practice.
 
 ## "You clone it, you own it"
 
@@ -16,6 +24,12 @@ The shadcn model proved that developers prefer owning their UI code over dependi
 The terminal is the center of the developer workflow. The UI components are keyboard-first by design — `j`/`k` to navigate, `/` to search, `Enter` to act, `Esc` to go back. The docs run locally with `bun run dev`. The CLI copies components into your project from the terminal. Everything flows through the keyboard.
 
 Mouse support exists but is secondary. The `useMouseInteraction` hook deliberately suppresses hover effects until the user actually moves the mouse, so keyboard navigation never fights with accidental pointer events.
+
+## Mobile-native by design
+
+Mobile isn't an afterthought. Every layout is designed to work on touch screens with a native feel — no app install required. On mobile, sub-routes render as bottom-bar tab groups, mirroring the navigation patterns people already know from native iOS and Android apps. The same tree of information that you navigate with `j`/`k` on desktop becomes swipeable, tappable, and thumb-reachable on a phone.
+
+The goal: apps built with this UX type are usable for all and efficient for those who need it.
 
 ## AI-native development
 

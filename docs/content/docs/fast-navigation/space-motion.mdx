@@ -1,0 +1,157 @@
+---
+title: Space Motion
+description: Press Space to activate hint-based navigation — type a prefix to jump instantly.
+---
+
+Space motion lets you navigate without touching the mouse. Press `Space` to enter hint mode, then type the first letters of a label to jump to it. The moment your input uniquely matches one item, navigation happens immediately — no `Enter` required.
+
+**Try it right now.** Press `Space` on this page. The sidebar links show hint badges — type the prefix to jump.
+
+## How it works
+
+1. **Activation** — press `Space` when no input is focused. A floating indicator appears at the bottom.
+2. **Hint computation** — each nav item gets the shortest unique prefix of its label. If two labels start with the same letter, prefixes grow until they diverge.
+3. **Typing** — each character you type narrows the matches. Non-matching items dim. Already-typed characters show in faded violet, remaining hint characters in bold violet.
+4. **Instant match** — the moment your typed string equals exactly one hint prefix, the item is selected and you navigate.
+5. **Cancel** — press `Esc`, `Space` again, or `Backspace` to undo. Auto-cancels after 3 seconds of inactivity.
+
+### Example hint computation
+
+Given sidebar items: Dashboard, Specifications, Settings, Knowledge
+
+| Label | Hint | Why |
+|---|---|---|
+| Dashboard | `d` | No other label starts with `d` |
+| Specifications | `sp` | Settings also starts with `s`, so one character isn't enough |
+| Settings | `se` | Same — needs two characters to be unique |
+| Knowledge | `k` | No conflict |
+
+Typing `s` narrows to Specifications and Settings. Typing `sp` matches Specifications uniquely — instant navigation.
+
+## The hook: useNavHints
+
+The core logic lives in a single hook. It handles activation, typing, matching, and auto-cancel.
+
+### Import
+
+```tsx
+import { useNavHints, computeHints } from "@/hooks/use-nav-hints";
+import type { NavHintItem } from "@/hooks/use-nav-hints";
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `items` | `NavHintItem[]` | required | Items that can be targeted. Each needs a `key` and `label`. |
+| `onMatch` | `(item: NavHintItem) => void` | `undefined` | Called when the typed prefix uniquely matches an item. |
+| `timeout` | `number` | `3000` | Auto-cancel after this many ms of inactivity. |
+| `activationKey` | `string` | `" "` (Space) | Key that toggles hint mode. |
+
+### Return value
+
+| Field | Type | Description |
+|---|---|---|
+| `active` | `boolean` | Whether hint mode is currently active. |
+| `typed` | `string` | Characters typed so far. |
+| `hints` | `Map<string, string>` | Computed hint prefix for each item key. |
+| `matching` | `Set<string>` | Keys of items that still match the typed input. |
+| `deactivate` | `() => void` | Manually exit hint mode. |
+
+### Basic usage
+
+```tsx
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useNavHints } from "@/hooks/use-nav-hints";
+
+const navItems = [
+  { key: "/", label: "Dashboard" },
+  { key: "/projects", label: "Projects" },
+  { key: "/settings", label: "Settings" },
+];
+
+export function MySidebar() {
+  const router = useRouter();
+
+  const { active, typed, hints, matching } = useNavHints({
+    items: navItems,
+    onMatch: (item) => router.push(item.key),
+  });
+
+  return (
+    <nav>
+      {navItems.map((item) => {
+        const hint = hints.get(item.key) ?? "";
+        const dimmed = active && !matching.has(item.key);
+        return (
+          <a
+            key={item.key}
+            href={item.key}
+            className={dimmed ? "opacity-25" : ""}
+          >
+            {active ? (
+              <HintLabel
+                label={item.label}
+                hint={hint}
+                typed={typed}
+                active={active}
+                dimmed={dimmed}
+              />
+            ) : (
+              item.label
+            )}
+          </a>
+        );
+      })}
+    </nav>
+  );
+}
+```
+
+## Components
+
+### HintLabel
+
+Renders a label with hint-character highlighting. Use this when you control the label rendering (custom sidebars, tab bars, etc.).
+
+```tsx
+import { HintLabel } from "@/components/hint-label";
+```
+
+| Prop | Type | Description |
+|---|---|---|
+| `label` | `string` | Full label text. |
+| `hint` | `string` | Computed hint prefix (from `computeHints`). |
+| `typed` | `string` | Characters typed so far. |
+| `active` | `boolean` | Whether hint mode is active. |
+| `dimmed` | `boolean` | Whether this item does NOT match the current input. |
+| `className` | `string` | Additional CSS classes. |
+
+### NavIndicator
+
+Floating bar that shows the current hint-mode state. Fixed to the bottom-center of the viewport.
+
+```tsx
+import { NavIndicator } from "@/components/nav-indicator";
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `active` | `boolean` | required | Whether hint mode is active. Hidden when false. |
+| `typed` | `string` | required | Characters typed so far. |
+| `label` | `string` | `"SPACE NAV"` | Mode label on the left. |
+
+## Integration with existing UIs
+
+If you don't control the sidebar rendering (like this fumadocs site), you can scan the DOM for navigation targets and overlay hint badges on them. See `docs/app/components/space-motion.tsx` in this repo for the full implementation — it queries sidebar links, computes hints with `useNavHints`, and renders floating badges using fixed positioning.
+
+## Safety
+
+The hook won't activate when:
+
+- An input, textarea, or select is focused
+- A contenteditable element is focused
+- Any modifier key (Ctrl, Meta, Alt) is held
+- A dialog or overlay is open (checks for `[data-overlay-open]` attribute)

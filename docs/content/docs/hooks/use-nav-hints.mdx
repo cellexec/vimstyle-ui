@@ -1,0 +1,116 @@
+---
+title: useNavHints
+description: Space-motion hint navigation — computes unique prefixes and handles keyboard-driven jumping.
+---
+
+`useNavHints` powers space-motion navigation. Given a list of labelled items, it computes the shortest unique prefix for each label. When the user presses Space (or a custom activation key), hint mode activates. Each typed character narrows the matches until exactly one item remains — then `onMatch` fires immediately.
+
+This is the same pattern as vimium's `f` key for link hints, adapted for any navigable list.
+
+## Import
+
+```tsx
+import { useNavHints, computeHints } from "@/hooks/use-nav-hints";
+import type { NavHintItem } from "@/hooks/use-nav-hints";
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `items` | `NavHintItem[]` | required | Items that can be targeted. Each needs a `key` and `label`. |
+| `onMatch` | `(item: NavHintItem) => void` | `undefined` | Called when the typed prefix uniquely matches an item. |
+| `timeout` | `number` | `3000` | Auto-cancel after this many ms of inactivity. |
+| `activationKey` | `string` | `" "` | Key that toggles hint mode. |
+
+### NavHintItem
+
+```ts
+interface NavHintItem {
+  key: string;   // Unique identifier
+  label: string; // Display text — prefix is computed from this
+}
+```
+
+## Return value
+
+| Field | Type | Description |
+|---|---|---|
+| `active` | `boolean` | Whether hint mode is currently active. |
+| `typed` | `string` | Characters typed so far. |
+| `hints` | `Map<string, string>` | Computed hint prefix for each item key. |
+| `matching` | `Set<string>` | Keys of items that still match the typed input. |
+| `deactivate` | `() => void` | Manually exit hint mode. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useNavHints } from "@/hooks/use-nav-hints";
+import { HintLabel } from "@/components/hint-label";
+
+const routes = [
+  { key: "/", label: "Dashboard" },
+  { key: "/projects", label: "Projects" },
+  { key: "/settings", label: "Settings" },
+  { key: "/specs", label: "Specifications" },
+];
+
+export function Sidebar() {
+  const router = useRouter();
+
+  const { active, typed, hints, matching } = useNavHints({
+    items: routes,
+    onMatch: (item) => router.push(item.key),
+  });
+
+  return (
+    <aside>
+      {routes.map((route) => (
+        <a key={route.key} href={route.key}>
+          <HintLabel
+            label={route.label}
+            hint={hints.get(route.key) ?? ""}
+            typed={typed}
+            active={active}
+            dimmed={active && !matching.has(route.key)}
+          />
+        </a>
+      ))}
+    </aside>
+  );
+}
+```
+
+## computeHints
+
+Pure function that computes the shortest unique prefix for each item. Exported separately so you can use it outside React.
+
+```ts
+const items = [
+  { key: "a", label: "Dashboard" },
+  { key: "b", label: "Settings" },
+  { key: "c", label: "Specifications" },
+];
+
+const hints = computeHints(items);
+// Map { "a" => "d", "b" => "se", "c" => "sp" }
+```
+
+## Safety checks
+
+The hook will NOT activate when:
+
+- An `<input>`, `<textarea>`, or `<select>` is focused
+- A `contentEditable` element is focused
+- Any modifier key (Ctrl, Meta, Alt) is held
+- An element with `[data-overlay-open]` exists in the DOM
+
+## Notes
+
+- The hint prefix is always lowercase regardless of the label casing.
+- When no items match the typed string, hint mode deactivates automatically.
+- The `timeout` resets on each keystroke — it measures inactivity, not total duration.
+- Pair with `HintLabel` for inline highlighting or `NavIndicator` for the floating status bar.

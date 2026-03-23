@@ -1,0 +1,76 @@
+---
+title: HintLabel
+description: Label that highlights the unique hint prefix during space-motion navigation.
+---
+
+`HintLabel` renders a text label with visual feedback during space-motion hint mode. Already-typed characters appear in faded violet, remaining hint characters in bold violet, and the rest of the label renders normally. Non-matching items fade to 25% opacity.
+
+Use this when you control the label rendering — custom sidebars, tab bars, nav lists.
+
+## Import
+
+```tsx
+import { HintLabel } from "@/components/hint-label";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | required | Full label text. |
+| `hint` | `string` | required | Computed hint prefix (from `computeHints`). |
+| `typed` | `string` | required | Characters the user has typed so far. |
+| `active` | `boolean` | required | Whether hint mode is currently active. |
+| `dimmed` | `boolean` | required | Whether this item does NOT match the current typed input. |
+| `className` | `string` | `""` | Additional CSS classes. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useNavHints } from "@/hooks/use-nav-hints";
+import { HintLabel } from "@/components/hint-label";
+
+const items = [
+  { key: "dash", label: "Dashboard" },
+  { key: "settings", label: "Settings" },
+  { key: "specs", label: "Specifications" },
+];
+
+export function NavList() {
+  const { active, typed, hints, matching } = useNavHints({
+    items,
+    onMatch: (item) => console.log("Navigate to", item.key),
+  });
+
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.key}>
+          <HintLabel
+            label={item.label}
+            hint={hints.get(item.key) ?? ""}
+            typed={typed}
+            active={active}
+            dimmed={active && !matching.has(item.key)}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Visual states
+
+| State | Appearance |
+|---|---|
+| Inactive | Plain label text, no highlighting. |
+| Active + matching | Typed chars in `text-violet-400/50`, remaining hint chars in bold `text-violet-300`, rest normal. |
+| Active + dimmed | Same coloring but entire label at 25% opacity. |
+
+## Notes
+
+- When `active` is `false`, renders as a plain `<span>` with `truncate` — zero overhead.
+- The hint prefix is case-insensitive and pulled from the start of the label. If the label is "Settings" and the hint is "se", the first two characters get colored.

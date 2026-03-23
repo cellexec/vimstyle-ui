@@ -12,6 +12,8 @@
     "section-header",
     "focus-overlay",
     "confirm-dialog",
-    "save-discard-dialog"
+    "save-discard-dialog",
+    "hint-label",
+    "nav-indicator"
   ]
 }
