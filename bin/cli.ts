@@ -80,6 +80,10 @@ const REGISTRY: Record<string, RegistrySection> = {
       file: "registry/components/yankable.tsx",
       deps: [],
     },
+    "vim-sidebar": {
+      file: "registry/components/vim-sidebar.tsx",
+      deps: ["hint-label", "use-nav-hints"],
+    },
   },
   hooks: {
     "use-vim-navigation": {
