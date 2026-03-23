@@ -33,14 +33,16 @@ export function VimList({
 }: VimListProps) {
   return (
     <div className="rounded-xl border-2 border-white/[0.08] bg-zinc-950/60 overflow-hidden flex flex-col min-h-0">
-      <SearchBar
+      <div className="shrink-0 sticky top-0 z-10 bg-zinc-950/60">
+        <SearchBar
         query={query}
         onQueryChange={onQueryChange}
         searchRef={searchRef}
         searchFocused={searchFocused}
         onFocusChange={onFocusChange}
         placeholder={placeholder}
-      />
+        />
+      </div>
       <div ref={listRef} className="flex-1 min-h-0 overflow-y-auto">
         {children}
       </div>
