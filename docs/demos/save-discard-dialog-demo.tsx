@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { SaveDiscardDialog } from "@/components/save-discard-dialog";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function SaveDiscardDialogDemo() {
   const [open, setOpen] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
 
   return (
-    <ComponentPreview>
+    <Showcase hints={[{ keys: "Enter", label: "save" }, { keys: "q", label: "discard" }, { keys: "Esc", label: "cancel" }]}>
       <div className="flex flex-col items-center gap-3 p-8">
         <button
           onClick={() => setOpen(true)}
@@ -39,6 +39,6 @@ export function SaveDiscardDialogDemo() {
           setOpen(false);
         }}
       />
-    </ComponentPreview>
+    </Showcase>
   );
 }

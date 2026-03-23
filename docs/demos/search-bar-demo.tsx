@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { SearchBar } from "@/components/search-bar";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function SearchBarDemo() {
   const [query, setQuery] = useState("");
@@ -10,7 +10,7 @@ export function SearchBarDemo() {
   const ref = useRef<HTMLInputElement>(null!);
 
   return (
-    <ComponentPreview>
+    <Showcase hints={[{ keys: "/", label: "focus" }, { keys: "Esc", label: "clear" }]}>
       <SearchBar
         query={query}
         onQueryChange={setQuery}
@@ -24,6 +24,6 @@ export function SearchBarDemo() {
           Searching for: <span className="text-violet-400">{query}</span>
         </div>
       )}
-    </ComponentPreview>
+    </Showcase>
   );
 }

@@ -2,11 +2,11 @@
 
 import React from "react";
 import { KbdHint } from "@/components/kbd-hint";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function KbdHintDemo() {
   return (
-    <ComponentPreview>
+    <Showcase>
       <div className="flex items-center gap-6 p-8">
         <div className="flex items-center gap-2">
           <span className="text-xs text-zinc-500">md:</span>
@@ -21,6 +21,6 @@ export function KbdHintDemo() {
           <KbdHint size="sm">Enter</KbdHint>
         </div>
       </div>
-    </ComponentPreview>
+    </Showcase>
   );
 }

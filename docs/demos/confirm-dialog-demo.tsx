@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function ConfirmDialogDemo() {
   const [open, setOpen] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
 
   return (
-    <ComponentPreview>
+    <Showcase hints={[{ keys: "Enter", label: "confirm" }, { keys: "Esc", label: "cancel" }]}>
       <div className="flex flex-col items-center gap-3 p-8">
         <button
           onClick={() => setOpen(true)}
@@ -37,6 +37,6 @@ export function ConfirmDialogDemo() {
         title="Delete project?"
         description="This action cannot be undone. The project and all its data will be permanently removed."
       />
-    </ComponentPreview>
+    </Showcase>
   );
 }

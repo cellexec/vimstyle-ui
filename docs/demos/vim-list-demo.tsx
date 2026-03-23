@@ -9,7 +9,7 @@ import { useFuzzyFilter } from "@/hooks/use-fuzzy-filter";
 import { useVimNavigation } from "@/hooks/use-vim-navigation";
 import { useScrollIntoView } from "@/hooks/use-scroll-into-view";
 import { useMouseInteraction } from "@/hooks/use-mouse-interaction";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 const items = [
   { id: "1", name: "Dashboard", section: "Pages" },
@@ -61,7 +61,7 @@ export function VimListDemo() {
   let flatIndex = 0;
 
   return (
-    <ComponentPreview className="h-[350px] flex flex-col">
+    <Showcase hints={[{ keys: ["j", "k"], label: "navigate" }, { keys: "/", label: "search" }, { keys: "Esc", label: "clear" }]} className="h-[350px] flex flex-col">
       <VimList
         query={query}
         onQueryChange={setQuery}
@@ -95,6 +95,6 @@ export function VimListDemo() {
           </React.Fragment>
         ))}
       </VimList>
-    </ComponentPreview>
+    </Showcase>
   );
 }

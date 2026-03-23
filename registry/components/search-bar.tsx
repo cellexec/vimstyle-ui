@@ -25,10 +25,18 @@ export function SearchBar({
   onFocusChange,
 }: SearchBarProps) {
   return (
-    <div className="relative flex items-center border-b border-white/[0.06] bg-zinc-950/80">
+    <div
+      className={`relative flex items-center border-b bg-zinc-950/80 transition-colors duration-150 ${
+        searchFocused
+          ? "border-violet-500/40 bg-violet-500/[0.03]"
+          : "border-white/[0.06]"
+      }`}
+    >
       {/* Magnifying glass icon */}
       <svg
-        className="absolute left-4 h-4 w-4 text-zinc-500 pointer-events-none"
+        className={`absolute left-4 h-4 w-4 pointer-events-none transition-colors duration-150 ${
+          searchFocused ? "text-violet-400" : "text-zinc-500"
+        }`}
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={2}
@@ -52,12 +60,14 @@ export function SearchBar({
         className="w-full bg-transparent py-3 pl-11 pr-12 text-sm text-zinc-200 placeholder:text-zinc-600 outline-none"
       />
 
-      {/* Show "/" hint when not focused and query is empty */}
-      {!searchFocused && !query && (
-        <div className="absolute right-4 pointer-events-none">
+      {/* Show "Esc" hint when focused, "/" hint when idle */}
+      <div className="absolute right-4 pointer-events-none">
+        {searchFocused ? (
+          <KbdHint size="sm">Esc</KbdHint>
+        ) : !query ? (
           <KbdHint>/</KbdHint>
-        </div>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 }

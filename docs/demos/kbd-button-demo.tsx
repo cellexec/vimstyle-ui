@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { KbdButton } from "@/components/kbd-button";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function KbdButtonDemo() {
   const [count, setCount] = useState(0);
 
   return (
-    <ComponentPreview>
+    <Showcase hints={[{ keys: "n", label: "new project" }, { keys: "s", label: "reset" }]}>
       <div className="flex flex-col items-center gap-4 p-8">
         <div className="flex items-center gap-3">
           <KbdButton
@@ -32,6 +32,6 @@ export function KbdButtonDemo() {
           </p>
         )}
       </div>
-    </ComponentPreview>
+    </Showcase>
   );
 }

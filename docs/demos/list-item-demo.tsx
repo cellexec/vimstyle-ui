@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ListItem } from "@/components/list-item";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 const items = [
   { name: "Project Alpha", date: "Mar 2026" },
@@ -15,7 +15,7 @@ export function ListItemDemo() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   return (
-    <ComponentPreview>
+    <Showcase>
       <div className="py-1">
         {items.map((item, i) => (
           <ListItem
@@ -45,6 +45,6 @@ export function ListItemDemo() {
           Click to select — click a selected item again to toggle editing state.
         </p>
       </div>
-    </ComponentPreview>
+    </Showcase>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FuzzyText } from "@/components/fuzzy-text";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 const examples = [
   "ProjectAlpha",
@@ -15,7 +15,7 @@ export function FuzzyTextDemo() {
   const [query, setQuery] = useState("pra");
 
   return (
-    <ComponentPreview>
+    <Showcase>
       <div className="p-6 space-y-4">
         <input
           type="text"
@@ -36,6 +36,6 @@ export function FuzzyTextDemo() {
           ))}
         </div>
       </div>
-    </ComponentPreview>
+    </Showcase>
   );
 }

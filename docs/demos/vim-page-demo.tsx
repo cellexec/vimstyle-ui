@@ -2,11 +2,11 @@
 
 import React from "react";
 import { VimPage } from "@/components/vim-page";
-import { ComponentPreview } from "./component-preview";
+import { Showcase } from "./showcase";
 
 export function VimPageDemo() {
   return (
-    <ComponentPreview className="h-[300px]">
+    <Showcase hints={[{ keys: ["j", "k"], label: "navigate" }, { keys: "/", label: "search" }, { keys: "Enter", label: "open" }, { keys: "Esc", label: "back" }]} className="h-[300px]">
       <VimPage
         title="Projects"
         subtitle="All your active projects"
@@ -26,6 +26,6 @@ export function VimPageDemo() {
           </div>
         </div>
       </VimPage>
-    </ComponentPreview>
+    </Showcase>
   );
 }
