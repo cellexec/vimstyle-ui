@@ -20,7 +20,7 @@ Every component is designed around one idea: **the keyboard is primary.** Lists 
 
 ```bash
 # Fork & clone
-git clone https://github.com/YOUR_USERNAME/vimstyle-ui.git
+git clone https://github.com/cellexec/vimstyle-ui.git
 cd vimstyle-ui
 bun install
 
