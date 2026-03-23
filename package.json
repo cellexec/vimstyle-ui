@@ -4,9 +4,10 @@
   "description": "Keyboard-first vim-style component library for Next.js — you clone it, you own it",
   "license": "MIT",
   "type": "module",
+  "workspaces": ["docs"],
   "scripts": {
-    "dev": "cd docs && bun install && bun run dev",
-    "build": "cd docs && bun install && bun run build",
+    "dev": "cd docs && bun run dev",
+    "build": "cd docs && bun run build",
     "cli": "bun run bin/cli.ts"
   },
   "bin": {
