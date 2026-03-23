@@ -1,0 +1,115 @@
+---
+title: VimSidebar
+description: Keyboard-driven sidebar with j/k navigation, space-motion hints, collapsible sections, and drag-to-resize.
+---
+
+`VimSidebar` is a full sidebar component with vim-style keyboard navigation built in. It combines `useNavHints` for space-motion, `HintLabel` for prefix highlighting, j/k navigation, collapsible sections, drag-to-resize, and a collapse toggle.
+
+This docs site uses VimSidebar as its sidebar — you're looking at it right now.
+
+## Import
+
+```tsx
+import { VimSidebar } from "@/components/vim-sidebar";
+import type { SidebarSection, SidebarItem } from "@/components/vim-sidebar";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | `"Navigation"` | Sidebar header title. |
+| `logo` | `ReactNode` | `undefined` | Logo or icon before the title. |
+| `sections` | `SidebarSection[]` | required | Grouped navigation sections. |
+| `footer` | `ReactNode` | `undefined` | Footer content below the nav. |
+| `onNavigate` | `(href: string) => void` | `window.location.href` | Called when an item is selected via keyboard. Use `router.push` for SPA navigation. |
+
+### SidebarSection
+
+```ts
+interface SidebarSection {
+  title: string;
+  items: SidebarItem[];
+  defaultCollapsed?: boolean;
+}
+```
+
+### SidebarItem
+
+```ts
+interface SidebarItem {
+  key: string;
+  label: string;
+  href: string;
+  icon?: ReactNode;
+}
+```
+
+## Usage
+
+```tsx
+"use client";
+
+import { useRouter } from "next/navigation";
+import { VimSidebar } from "@/components/vim-sidebar";
+
+const sections = [
+  {
+    title: "Project",
+    items: [
+      { key: "/", label: "Dashboard", href: "/" },
+      { key: "/projects", label: "Projects", href: "/projects" },
+      { key: "/settings", label: "Settings", href: "/settings" },
+    ],
+  },
+  {
+    title: "Global",
+    items: [
+      { key: "/usage", label: "Usage", href: "/usage" },
+      { key: "/agents", label: "Agents", href: "/agents" },
+    ],
+  },
+];
+
+export function AppLayout({ children }) {
+  const router = useRouter();
+
+  return (
+    <div className="flex h-screen">
+      <VimSidebar
+        title="My App"
+        sections={sections}
+        onNavigate={(href) => router.push(href)}
+      />
+      <main className="flex-1 overflow-y-auto">{children}</main>
+    </div>
+  );
+}
+```
+
+## Keyboard bindings
+
+| Key | Action |
+|---|---|
+| `j` / `ArrowDown` | Move selection down |
+| `k` / `ArrowUp` | Move selection up |
+| `Enter` | Navigate to selected item |
+| `Space` | Activate space-motion hint mode |
+| `Esc` | Clear selection |
+
+## Features
+
+- **Space-motion hints** — press Space, type the shortest unique prefix to jump instantly
+- **j/k navigation** — move a violet highlight through items, Enter to navigate
+- **Collapsible sections** — click section headers to collapse/expand
+- **Drag-to-resize** — drag the right edge to adjust width (persisted in localStorage)
+- **Collapse toggle** — button at the bottom collapses to icon-only mode (persisted)
+- **Tooltips** — hover icons in collapsed mode to see labels
+- **Active page highlight** — current page highlighted with violet background
+
+## Notes
+
+- Width and collapsed state persist in `localStorage` (`vim-sidebar-width`, `vim-sidebar-collapsed`).
+- The sidebar uses `visibility: hidden` until hydrated to prevent layout shift.
+- Section headers show a chevron that rotates when collapsed.
+- Keyboard navigation skips items in collapsed sections.

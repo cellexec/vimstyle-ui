@@ -16,6 +16,7 @@
     "hint-label",
     "nav-indicator",
     "yank-indicator",
-    "yankable"
+    "yankable",
+    "vim-sidebar"
   ]
 }
