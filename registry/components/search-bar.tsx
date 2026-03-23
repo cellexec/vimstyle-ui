@@ -60,10 +60,13 @@ export function SearchBar({
         className="w-full bg-transparent py-3 pl-11 pr-12 text-sm text-zinc-200 placeholder:text-zinc-600 outline-none"
       />
 
-      {/* Show "Esc" hint when focused, "/" hint when idle */}
-      <div className="absolute right-4 pointer-events-none">
+      {/* Show Enter+Esc hints when focused, "/" hint when idle */}
+      <div className="absolute right-4 pointer-events-none flex items-center gap-1.5">
         {searchFocused ? (
-          <KbdHint size="sm">Esc</KbdHint>
+          <>
+            <KbdHint size="sm">Enter</KbdHint>
+            <KbdHint size="sm">Esc</KbdHint>
+          </>
         ) : !query ? (
           <KbdHint>/</KbdHint>
         ) : null}
