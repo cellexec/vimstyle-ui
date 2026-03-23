@@ -6,6 +6,7 @@
     "use-fuzzy-filter",
     "use-mouse-interaction",
     "use-scroll-into-view",
-    "use-nav-hints"
+    "use-nav-hints",
+    "use-yank-mode"
   ]
 }

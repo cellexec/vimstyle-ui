@@ -33,23 +33,29 @@ cp registry/lib/fuzzy.ts your-app/lib/
 
 ## CLI
 
-Use the CLI to copy individual components into your project:
+Use the CLI to copy individual components into your project. Works with `npx` or `bunx` — no local clone needed:
 
 ```bash
 # Initialize vimstyle-ui in your project (sets up paths)
-bunx vimstyle-ui init
+npx vimstyle-ui init
 
 # Add a specific component
-bunx vimstyle-ui add vim-page
+npx vimstyle-ui add vim-page
 
 # Add a hook
-bunx vimstyle-ui add use-vim-navigation
+npx vimstyle-ui add use-vim-navigation
 
 # Add multiple at once
-bunx vimstyle-ui add vim-page vim-list search-bar use-vim-navigation
+npx vimstyle-ui add vim-page vim-list search-bar use-vim-navigation
+
+# Add everything
+npx vimstyle-ui add --all
+
+# List available components
+npx vimstyle-ui list
 ```
 
-The CLI copies the source files directly into your project. No runtime dependency is installed.
+The CLI fetches source files from GitHub and copies them into your project. No runtime dependency is installed — the files are yours.
 
 ## Claude Code skill only
 

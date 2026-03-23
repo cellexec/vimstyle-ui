@@ -1,0 +1,124 @@
+---
+title: useYankMode
+description: Vim-style yank (copy) mode — press y, type a prefix, value copied to clipboard.
+---
+
+`useYankMode` adds vim-style yanking to any list or page. Press `y` to enter yank mode, hint badges appear on each yankable item, type the prefix to copy that item's value to the clipboard. The consumer defines what's yankable and what value each target yields.
+
+Same mechanics as [useNavHints](/docs/hooks/use-nav-hints) but the action is clipboard copy instead of navigation.
+
+## Import
+
+```tsx
+import { useYankMode } from "@/hooks/use-yank-mode";
+import type { YankTarget } from "@/hooks/use-yank-mode";
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `targets` | `YankTarget[]` | required | Items that can be yanked. |
+| `onYank` | `(target: YankTarget) => void` | `undefined` | Called after a value is copied to clipboard. |
+| `timeout` | `number` | `3000` | Auto-cancel after this many ms of inactivity. |
+| `activationKey` | `string` | `"y"` | Key that toggles yank mode. |
+| `confirmDuration` | `number` | `1500` | How long the "Copied" confirmation shows (ms). |
+
+### YankTarget
+
+```ts
+interface YankTarget {
+  key: string;    // Unique identifier
+  label: string;  // Display text — prefix computed from this
+  value: string;  // What gets copied to clipboard
+}
+```
+
+## Return value
+
+| Field | Type | Description |
+|---|---|---|
+| `active` | `boolean` | Whether yank mode is currently active. |
+| `typed` | `string` | Characters typed so far. |
+| `hints` | `Map<string, string>` | Computed hint prefix for each target key. |
+| `matching` | `Set<string>` | Keys of targets that still match the typed input. |
+| `lastYanked` | `YankTarget \| null` | Most recently yanked target (for confirmation UI). Clears after `confirmDuration`. |
+| `deactivate` | `() => void` | Manually exit yank mode. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useYankMode } from "@/hooks/use-yank-mode";
+import { YankIndicator } from "@/components/yank-indicator";
+import { HintLabel } from "@/components/hint-label";
+
+const projects = [
+  { id: "1", name: "API Gateway", url: "https://github.com/org/api-gateway" },
+  { id: "2", name: "Mobile App", url: "https://github.com/org/mobile-app" },
+  { id: "3", name: "Dashboard", url: "https://github.com/org/dashboard" },
+];
+
+export function ProjectList() {
+  const yankTargets = projects.map((p) => ({
+    key: p.id,
+    label: p.name,
+    value: p.url,
+  }));
+
+  const { active, typed, hints, matching, lastYanked } = useYankMode({
+    targets: yankTargets,
+  });
+
+  return (
+    <div>
+      <ul>
+        {projects.map((project) => (
+          <li key={project.id}>
+            <HintLabel
+              label={project.name}
+              hint={hints.get(project.id) ?? ""}
+              typed={typed}
+              active={active}
+              dimmed={active && !matching.has(project.id)}
+            />
+          </li>
+        ))}
+      </ul>
+      <YankIndicator active={active} typed={typed} lastYanked={lastYanked} />
+    </div>
+  );
+}
+```
+
+Press `y`, type `a` → "https://github.com/org/api-gateway" copied. A green "Copied: API Gateway" flash confirms.
+
+## What gets yanked
+
+The `value` field is entirely up to you. Common patterns:
+
+| Use case | `label` | `value` |
+|---|---|---|
+| Copy a URL | Project name | `https://...` |
+| Copy an ID | Item title | `item-123` |
+| Copy a command | Task name | `git checkout feature/...` |
+| Copy JSON | Record label | `JSON.stringify(record)` |
+| Copy a file path | File name | `/src/components/foo.tsx` |
+
+## Composing with useNavHints
+
+Both hooks can be active on the same page — they use different activation keys (`Space` vs `y`) so they don't conflict:
+
+```tsx
+const nav = useNavHints({ items: navItems, onMatch: ... });
+const yank = useYankMode({ targets: yankTargets });
+```
+
+## Notes
+
+- Uses `navigator.clipboard.writeText()` — requires HTTPS or localhost.
+- The `lastYanked` state auto-clears after `confirmDuration` ms.
+- Won't activate when an input, textarea, select, or contenteditable is focused.
+- Won't activate when a dialog/overlay with `[data-overlay-open]` is present.
+- Reuses `computeHints` from `useNavHints` — same shortest-unique-prefix algorithm.

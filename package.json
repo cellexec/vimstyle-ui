@@ -4,13 +4,31 @@
   "description": "Keyboard-first vim-style component library for Next.js — you clone it, you own it",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cellexec/vimstyle-ui.git"
+  },
+  "keywords": [
+    "vim",
+    "keyboard",
+    "ui",
+    "components",
+    "nextjs",
+    "react",
+    "tailwind"
+  ],
   "workspaces": ["docs"],
   "scripts": {
     "dev": "cd docs && bun run dev",
     "build": "cd docs && bun run build",
+    "build:cli": "bun build bin/cli.ts --target=node --outfile=dist/cli.mjs",
+    "prepublishOnly": "bun run build:cli",
     "cli": "bun run bin/cli.ts"
   },
   "bin": {
-    "vimstyle-ui": "./bin/cli.ts"
-  }
+    "vimstyle-ui": "dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ]
 }

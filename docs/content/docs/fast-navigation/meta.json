@@ -1,4 +1,4 @@
 {
   "title": "Fast Navigation",
-  "pages": ["index", "space-motion"]
+  "pages": ["index", "space-motion", "yank-mode"]
 }

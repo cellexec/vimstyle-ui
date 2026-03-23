@@ -1,0 +1,74 @@
+---
+title: Yankable
+description: Wrapper that marks content as copyable with a small clipboard icon.
+---
+
+`Yankable` wraps any content with a subtle clipboard icon to signal that this part of the UI has a copyable value. When yank mode activates, the icon turns amber for matching items and dims for non-matching ones.
+
+## Import
+
+```tsx
+import { Yankable } from "@/components/yankable";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | required | The content to wrap. |
+| `active` | `boolean` | `false` | Whether yank mode is currently active. |
+| `matching` | `boolean` | `true` | Whether this item matches the current typed input. |
+| `className` | `string` | `""` | Additional CSS classes. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useYankMode } from "@/hooks/use-yank-mode";
+import { Yankable } from "@/components/yankable";
+import { YankIndicator } from "@/components/yank-indicator";
+
+const items = [
+  { id: "1", name: "API Gateway", url: "https://api.example.com" },
+  { id: "2", name: "Dashboard", url: "https://dash.example.com" },
+];
+
+export function ItemList() {
+  const { active, typed, hints, matching, lastYanked } = useYankMode({
+    targets: items.map((i) => ({ key: i.id, label: i.name, value: i.url })),
+  });
+
+  return (
+    <>
+      <ul>
+        {items.map((item) => (
+          <li key={item.id}>
+            <Yankable
+              active={active}
+              matching={matching.has(item.id)}
+            >
+              {item.name}
+            </Yankable>
+          </li>
+        ))}
+      </ul>
+      <YankIndicator active={active} typed={typed} lastYanked={lastYanked} />
+    </>
+  );
+}
+```
+
+## Visual states
+
+| State | Icon color | Content |
+|---|---|---|
+| Inactive | `text-zinc-600` | Normal — subtle hint that copying is available |
+| Active + matching | `text-amber-400` | Highlighted — this item can be yanked |
+| Active + not matching | `text-zinc-600` + 25% opacity | Dimmed — doesn't match current input |
+
+## Notes
+
+- The clipboard icon is 12x12px (`h-3 w-3`) and uses `aria-hidden` since it's decorative.
+- Compose with `HintLabel` inside the wrapper for full hint + icon rendering.
+- The icon is always visible (even when yank mode is inactive) so users discover the feature.
