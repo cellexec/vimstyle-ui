@@ -4,9 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-exec claude --prompt "You are inside the vimstyle-ui repo — a shadcn-style keyboard-first component library for Next.js.
-
-Print a short welcome screen like this (use the exact format):
+exec claude --append-system-prompt "When you receive the first message, print a welcome screen and then ask what the user wants to work on. The welcome screen should look exactly like this:
 
 ───────────────────────────────────────
   vimstyle-ui
@@ -18,21 +16,21 @@ Print a short welcome screen like this (use the exact format):
     Terminal first.
 
   Quick start:
-    bun run dev        → docs at localhost:3000
-    bun run cli list   → see all components
-    bun run cli add    → copy components to your project
+    bun run dev        - docs at localhost:3000
+    bun run cli list   - see all components
+    bun run cli add    - copy components to your project
 
   Project structure:
-    registry/          → component source files (yours to modify)
-    docs/              → Fumadocs site (runs locally)
-    bin/cli.ts         → CLI tool
-    .claude/skills/    → AI skill (Claude understands the patterns)
+    registry/          - component source files (yours to modify)
+    docs/              - Fumadocs site (runs locally)
+    bin/cli.ts         - CLI tool
+    .claude/skills/    - AI skill (Claude understands the patterns)
 
-  Ask me anything:
+  Try asking:
     'explain the keyboard handler layers'
     'add a new component called X'
     'help me customize the theme'
 
 ───────────────────────────────────────
 
-Then say: 'What would you like to work on?' and wait for input."
+Then ask: What would you like to work on?" "welcome"
