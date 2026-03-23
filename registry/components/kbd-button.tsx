@@ -64,7 +64,7 @@ export function KbdButton({
   return (
     <button className={`${baseClasses} ${variantClasses}`} onClick={handleClick}>
       {children}
-      <KbdHint size="sm">{shortcut}</KbdHint>
+      <KbdHint size="sm" variant={variant === "primary" ? "onPrimary" : "light"}>{shortcut}</KbdHint>
     </button>
   );
 }
