@@ -1,0 +1,43 @@
+---
+title: Mail Client
+description: Email client demo using SplitLayout with list and detail pane.
+---
+
+import { MailDemo } from "@/demos/mail-demo";
+
+An email client built with `SplitLayout`. The left panel shows messages grouped by folder (Inbox / Sent), and the right panel displays the selected email's content. Navigate with keyboard or mouse.
+
+<MailDemo />
+
+## What's demonstrated
+
+- **SplitLayout** with list + detail pane
+- **Section grouping** (Inbox vs Sent) via `groupFn`
+- **Detail rendering** that updates on selection change
+- **Fuzzy search** across email subjects
+- Responsive split that adapts to different screen widths
+
+## Source
+
+```tsx
+<SplitLayout
+  title="Mail"
+  subtitle="5 messages"
+  items={emails}
+  keyFn={(e) => e.subject}
+  groupFn={(e) => e.folder === "inbox" ? "Inbox" : "Sent"}
+  listWidth="w-2/5"
+  renderItem={(email, { query }) => (
+    <div>
+      <FuzzyText text={email.subject} query={query} />
+      <p className="text-xs text-zinc-500">{email.from}</p>
+    </div>
+  )}
+  renderDetail={(email) => (
+    <div className="p-6">
+      <h3>{email.subject}</h3>
+      <p>{email.body}</p>
+    </div>
+  )}
+/>
+```
