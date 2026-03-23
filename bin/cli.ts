@@ -65,6 +65,14 @@ const REGISTRY: Record<string, RegistrySection> = {
       file: "registry/components/save-discard-dialog.tsx",
       deps: ["kbd-hint"],
     },
+    "hint-label": {
+      file: "registry/components/hint-label.tsx",
+      deps: [],
+    },
+    "nav-indicator": {
+      file: "registry/components/nav-indicator.tsx",
+      deps: [],
+    },
   },
   hooks: {
     "use-vim-navigation": {
@@ -81,6 +89,10 @@ const REGISTRY: Record<string, RegistrySection> = {
     },
     "use-scroll-into-view": {
       file: "registry/hooks/use-scroll-into-view.ts",
+      deps: [],
+    },
+    "use-nav-hints": {
+      file: "registry/hooks/use-nav-hints.ts",
       deps: [],
     },
   },

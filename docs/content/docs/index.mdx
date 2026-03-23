@@ -18,15 +18,25 @@ bun run dev
 
 The dev server starts with the docs site and a live preview of every component.
 
+## Self-contained docs
+
+This documentation site is built with the same components it documents. The sidebar uses `useNavHints` for space-motion navigation. The demo previews render the actual registry components. Changing a file in `registry/` changes both the library and the docs — fork the repo, modify a component, run `bun run dev`, and see the result immediately.
+
+Press `Space` right now to try space-motion navigation on this sidebar.
+
 ## What's included
 
-- **11 components** — Full-page layouts, navigable lists, search bars, keyboard hints, dialogs, and overlays.
-- **4 hooks** — Vim-style keyboard navigation, fuzzy filtering, mouse interaction guards, and auto-scroll.
+- **12 components** — Full-page layouts, navigable lists, search bars, keyboard hints, dialogs, overlays, and hint labels.
+- **5 hooks** — Vim-style keyboard navigation, fuzzy filtering, mouse interaction guards, auto-scroll, and space-motion hints.
+- **3 layouts** — Pre-wired page templates: list, split-panel, and command palette.
 - **Claude Code skill** — An AI skill file so Claude understands the full pattern system when working on your fork.
 
 ## Next steps
 
 - [Philosophy](/docs/philosophy) — Why this library exists and how it works.
 - [Installation](/docs/installation) — Three ways to get the components into your project.
-- [Components](/docs/components) — Browse all 11 components.
-- [Hooks](/docs/hooks) — Browse all 4 hooks.
+- [How To](/docs/how-to) — Step-by-step guide to building a page with vimstyle-ui.
+- [Fast Navigation](/docs/fast-navigation) — Keyboard patterns for instant navigation.
+- [Components](/docs/components) — Browse all components.
+- [Hooks](/docs/hooks) — Browse all hooks.
+- [Layouts](/docs/layouts) — Pre-composed page templates.

@@ -3,7 +3,7 @@ title: Hooks
 description: All vimstyle-ui hooks at a glance.
 ---
 
-vimstyle-ui ships 4 hooks that handle keyboard navigation, fuzzy filtering, mouse interaction, and auto-scrolling.
+vimstyle-ui ships 5 hooks that handle keyboard navigation, fuzzy filtering, mouse interaction, auto-scrolling, and space-motion hints.
 
 | Hook | Description |
 |---|---|
@@ -11,3 +11,4 @@ vimstyle-ui ships 4 hooks that handle keyboard navigation, fuzzy filtering, mous
 | [useFuzzyFilter](/docs/hooks/use-fuzzy-filter) | Filters an array with fuzzy matching and resets the selected index on query change. |
 | [useMouseInteraction](/docs/hooks/use-mouse-interaction) | Guards against accidental hover selection by waiting for real mouse movement. |
 | [useScrollIntoView](/docs/hooks/use-scroll-into-view) | Auto-scrolls the selected item into the visible area of a scroll container. |
+| [useNavHints](/docs/hooks/use-nav-hints) | Space-motion hint navigation — computes unique prefixes and handles keyboard-driven jumping. |

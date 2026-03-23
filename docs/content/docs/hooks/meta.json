@@ -5,6 +5,7 @@
     "use-vim-navigation",
     "use-fuzzy-filter",
     "use-mouse-interaction",
-    "use-scroll-into-view"
+    "use-scroll-into-view",
+    "use-nav-hints"
   ]
 }

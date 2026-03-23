@@ -1,0 +1,20 @@
+---
+title: Fast Navigation
+description: Short guides on using vimstyle-ui keyboard patterns effectively.
+---
+
+This section covers keyboard-first navigation patterns you can drop into any page. Each guide explains one pattern, shows how it works, and links to the implementation — which is running live on this very docs site.
+
+**Try it now:** press `Space` on this page to activate space-motion navigation. The sidebar links get hint prefixes — type the prefix to jump instantly.
+
+## Patterns
+
+| Pattern | Activation | What it does |
+|---|---|---|
+| [Space Motion](/docs/fast-navigation/space-motion) | `Space` | Type shortest unique prefix of a nav label to jump to it. Like vimium link hints for your sidebar. |
+
+## Self-contained docs
+
+This documentation site is built with the same components it documents. The sidebar navigation you see uses `useNavHints` from the registry. The hint badges and bottom indicator are `HintLabel` and `NavIndicator` from the component library.
+
+Changing a component in `registry/` changes both the library and the docs. Fork the repo, modify a component, and see the result immediately in your local docs at `localhost:3000`.

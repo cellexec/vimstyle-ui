@@ -1,0 +1,52 @@
+---
+title: NavIndicator
+description: Floating indicator showing space-motion hint mode state.
+---
+
+`NavIndicator` is a fixed-position bar that appears at the bottom-center of the viewport when space-motion hint mode is active. It shows the mode label, typed characters with a blinking cursor, and an escape hint.
+
+## Import
+
+```tsx
+import { NavIndicator } from "@/components/nav-indicator";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `active` | `boolean` | required | Whether hint mode is active. Hidden when false. |
+| `typed` | `string` | required | Characters typed so far. |
+| `label` | `string` | `"SPACE NAV"` | Mode label shown on the left. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useNavHints } from "@/hooks/use-nav-hints";
+import { NavIndicator } from "@/components/nav-indicator";
+
+export function MyPage() {
+  const { active, typed } = useNavHints({
+    items: [
+      { key: "home", label: "Home" },
+      { key: "about", label: "About" },
+    ],
+    onMatch: (item) => console.log(item.key),
+  });
+
+  return (
+    <div>
+      {/* Your page content */}
+      <NavIndicator active={active} typed={typed} />
+    </div>
+  );
+}
+```
+
+## Notes
+
+- Returns `null` when `active` is `false` — no DOM rendered.
+- Uses `fixed` positioning with `z-[9999]` so it floats above all content.
+- The blinking cursor (`animate-pulse`) provides visual feedback that hint mode is listening for input.
