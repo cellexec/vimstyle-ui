@@ -1,12 +1,13 @@
 /**
  * Premium showcase wrapper for interactive component demos.
  *
- * Wraps demo content with a labeled header, inset demo area with clear
- * visual separation, and an expandable keyboard hints panel.
+ * Wraps demo content with a labeled header and inset demo area.
+ * The ? kbd button blurs the demo and overlays keyboard hints as a
+ * centered popover. Pressing any listed key dismisses the overlay.
  */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface KeyHint {
   keys: string | string[];
@@ -22,6 +23,31 @@ interface ShowcaseProps {
 
 export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
   const [hintsOpen, setHintsOpen] = useState(false);
+
+  // Collect all hint keys for dismissal
+  const allKeys = hints
+    ? hints.flatMap((h) => (Array.isArray(h.keys) ? h.keys : [h.keys]))
+    : [];
+
+  const dismiss = useCallback(() => setHintsOpen(false), []);
+
+  // Dismiss on any listed key press or Escape
+  useEffect(() => {
+    if (!hintsOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (
+        e.key === "Escape" ||
+        allKeys.some(
+          (k) => k.toLowerCase() === e.key.toLowerCase()
+        )
+      ) {
+        e.preventDefault();
+        dismiss();
+      }
+    };
+    window.addEventListener("keydown", handler, true);
+    return () => window.removeEventListener("keydown", handler, true);
+  }, [hintsOpen, allKeys, dismiss]);
 
   return (
     <div className="not-prose my-10">
@@ -78,42 +104,72 @@ export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
           )}
         </div>
 
-        {/* Expandable hints panel */}
-        {hints && hintsOpen && (
-          <div className="mx-5 mb-3 rounded-lg border border-violet-500/10 bg-violet-500/[0.04] px-4 py-2.5">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {hints.map((hint, i) => {
-                const keys = Array.isArray(hint.keys)
-                  ? hint.keys
-                  : [hint.keys];
-                return (
-                  <span key={i} className="flex items-center gap-1.5">
-                    {keys.map((key, ki) => (
-                      <React.Fragment key={ki}>
-                        {ki > 0 && (
-                          <span className="text-[9px] text-zinc-600">/</span>
-                        )}
-                        <kbd className="inline-flex items-center justify-center rounded-md border border-violet-500/20 bg-violet-500/10 px-1.5 py-0.5 font-mono text-[10px] font-medium leading-none text-violet-300">
-                          {key}
-                        </kbd>
-                      </React.Fragment>
-                    ))}
-                    <span className="text-[11px] text-zinc-400">
-                      {hint.label}
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Inset demo area */}
         <div className="px-5 pb-5">
           <div
             className={`relative overflow-hidden rounded-xl border border-white/[0.06] bg-zinc-950 ${className}`}
           >
-            {children}
+            {/* Demo content — blurs when hints overlay is open */}
+            <div
+              className={`transition-all duration-200 ${
+                hintsOpen
+                  ? "pointer-events-none blur-[6px] brightness-50"
+                  : ""
+              }`}
+            >
+              {children}
+            </div>
+
+            {/* Hints popover overlay */}
+            {hintsOpen && (
+              <div
+                className="absolute inset-0 z-10 flex items-center justify-center"
+                onClick={dismiss}
+              >
+                <div
+                  className="rounded-xl border border-violet-500/20 bg-zinc-900/95 px-6 py-5 shadow-2xl backdrop-blur-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                    Keyboard shortcuts
+                  </p>
+                  <div className="flex flex-col gap-2.5">
+                    {hints!.map((hint, i) => {
+                      const keys = Array.isArray(hint.keys)
+                        ? hint.keys
+                        : [hint.keys];
+                      return (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between gap-6"
+                        >
+                          <span className="text-[12px] text-zinc-300">
+                            {hint.label}
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            {keys.map((key, ki) => (
+                              <React.Fragment key={ki}>
+                                {ki > 0 && (
+                                  <span className="text-[9px] text-zinc-600">
+                                    /
+                                  </span>
+                                )}
+                                <kbd className="inline-flex min-w-[22px] items-center justify-center rounded-md border border-violet-500/25 bg-violet-500/10 px-2 py-1 font-mono text-[11px] font-medium leading-none text-violet-300">
+                                  {key}
+                                </kbd>
+                              </React.Fragment>
+                            ))}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 text-center text-[10px] text-zinc-600">
+                    press any key or click to dismiss
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
