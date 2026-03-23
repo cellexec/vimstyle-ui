@@ -21,13 +21,21 @@ export function SpaceMotion() {
   const router = useRouter();
   const pathname = usePathname();
   const [targets, setTargets] = useState<NavTarget[]>([]);
+  const [disabled, setDisabled] = useState(false);
   const [rects, setRects] = useState<Map<string, DOMRect>>(new Map());
   const linksRef = useRef<Map<string, Element>>(new Map());
 
   // Scan sidebar for navigation targets on pathname change
+  // Disable when a demo on the page claims Space for itself
   useEffect(() => {
-    // Small delay to let fumadocs render the sidebar
     const timer = setTimeout(() => {
+      if (document.querySelector("[data-space-motion-disabled]")) {
+        setDisabled(true);
+        setTargets([]);
+        return;
+      }
+      setDisabled(false);
+
       const sidebar = document.querySelector("aside");
       if (!sidebar) return;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavHints } from "@/hooks/use-nav-hints";
 import { HintLabel } from "@/components/hint-label";
 import { NavIndicator } from "@/components/nav-indicator";
@@ -15,12 +15,23 @@ const navItems = [
 ];
 
 export function NavHintsDemo() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const { active, typed, hints, matching } = useNavHints({
     items: navItems,
     onMatch: () => {},
   });
 
+  // Mark this page so the global SpaceMotion disables itself
+  useEffect(() => {
+    const marker = document.createElement("div");
+    marker.setAttribute("data-space-motion-disabled", "");
+    marker.style.display = "none";
+    document.body.appendChild(marker);
+    return () => marker.remove();
+  }, []);
+
   return (
+    <div ref={containerRef}>
     <Showcase
       hints={[
         { keys: "Space", label: "enter hint mode" },
@@ -102,5 +113,6 @@ export function NavHintsDemo() {
       </div>
       <NavIndicator active={active} typed={typed} />
     </Showcase>
+    </div>
   );
 }
