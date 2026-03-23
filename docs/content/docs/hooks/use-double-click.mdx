@@ -1,0 +1,49 @@
+---
+title: useDoubleClick
+description: Distinguishes single-click from double-click with a debounced timer.
+---
+
+`useDoubleClick` returns a click handler that disambiguates single and double clicks. Single click fires after a 200ms delay; double click fires immediately and cancels the pending single click.
+
+Useful for lists where single-click selects and double-click opens/navigates.
+
+## Import
+
+```tsx
+import { useDoubleClick } from "@/hooks/use-double-click";
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `onSingleClick` | `() => void` | required | Called on single click (after delay). |
+| `onDoubleClick` | `() => void` | required | Called on double click (immediately). |
+| `delay` | `number` | `200` | Delay in ms before single click fires. |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useDoubleClick } from "@/hooks/use-double-click";
+
+export function FileItem({ name, onSelect, onOpen }) {
+  const handleClick = useDoubleClick({
+    onSingleClick: () => onSelect(name),
+    onDoubleClick: () => onOpen(name),
+  });
+
+  return (
+    <div onClick={handleClick} className="cursor-pointer px-3 py-2">
+      {name}
+    </div>
+  );
+}
+```
+
+## Notes
+
+- Uses `setTimeout` + `clearTimeout` for debouncing.
+- The 200ms delay is imperceptible for single clicks but enough to catch double clicks.
+- The returned handler is stable across renders (wrapped in `useCallback`).

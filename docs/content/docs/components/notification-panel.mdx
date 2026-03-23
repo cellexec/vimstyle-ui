@@ -1,0 +1,60 @@
+---
+title: NotificationPanel
+description: Notification panel with vim-style keyboard navigation, fuzzy search, date grouping, and actions.
+---
+
+import { NotificationPanelDemo } from "@/demos/notification-panel-demo";
+
+`NotificationPanel` is a full-featured notification center built with vimstyle-ui components. It has j/k navigation, fuzzy search, date grouping (Today/Yesterday/Older), `r` to mark read, `d` to dismiss, and `g`/`G` to jump to top/bottom.
+
+<NotificationPanelDemo />
+
+## Import
+
+```tsx
+import { NotificationPanel } from "@/components/notification-panel";
+import type { Notification } from "@/components/notification-panel";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `notifications` | `Notification[]` | required | List of notifications. |
+| `onSelect` | `(n: Notification) => void` | `undefined` | Called on Enter. |
+| `onMarkRead` | `(n: Notification) => void` | `undefined` | Called on `r`. |
+| `onDismiss` | `(n: Notification) => void` | `undefined` | Called on `d`. |
+| `onClose` | `() => void` | `undefined` | Called on Escape. |
+| `title` | `string` | `"Notifications"` | Panel title. |
+
+### Notification
+
+```ts
+interface Notification {
+  id: string;
+  title: string;
+  body?: string;
+  timestamp: Date;
+  read?: boolean;
+}
+```
+
+## Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| `j` / `k` | Navigate |
+| `/` | Focus search |
+| `Enter` | Select notification |
+| `r` | Mark read |
+| `d` | Dismiss |
+| `g` | Jump to top |
+| `G` | Jump to bottom |
+| `Esc` | Clear search or close |
+
+## Notes
+
+- Groups notifications by date using `dayLabel()` (Today/Yesterday/Older).
+- Shows relative time (`timeAgo()`) on each item.
+- Unread notifications have a violet dot indicator.
+- Composes VimList, ListItem, SectionHeader, FuzzyText, and all four core hooks.

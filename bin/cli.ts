@@ -84,6 +84,33 @@ const REGISTRY: Record<string, RegistrySection> = {
       file: "registry/components/vim-sidebar.tsx",
       deps: ["hint-label", "use-nav-hints"],
     },
+    "escape-blur": {
+      file: "registry/components/escape-blur.tsx",
+      deps: [],
+    },
+    tooltip: {
+      file: "registry/components/tooltip.tsx",
+      deps: [],
+    },
+    "log-terminal": {
+      file: "registry/components/log-terminal.tsx",
+      deps: [],
+    },
+    "notification-panel": {
+      file: "registry/components/notification-panel.tsx",
+      deps: [
+        "vim-list",
+        "list-item",
+        "section-header",
+        "fuzzy-text",
+        "kbd-hint",
+        "use-vim-navigation",
+        "use-fuzzy-filter",
+        "use-mouse-interaction",
+        "use-scroll-into-view",
+        "fuzzy",
+      ],
+    },
   },
   hooks: {
     "use-vim-navigation": {
@@ -109,6 +136,14 @@ const REGISTRY: Record<string, RegistrySection> = {
     "use-yank-mode": {
       file: "registry/hooks/use-yank-mode.ts",
       deps: ["use-nav-hints"],
+    },
+    "use-auto-resize": {
+      file: "registry/hooks/use-auto-resize.ts",
+      deps: [],
+    },
+    "use-double-click": {
+      file: "registry/hooks/use-double-click.ts",
+      deps: [],
     },
   },
   layouts: {
@@ -158,6 +193,14 @@ const REGISTRY: Record<string, RegistrySection> = {
   lib: {
     fuzzy: {
       file: "registry/lib/fuzzy.ts",
+      deps: [],
+    },
+    "date-utils": {
+      file: "registry/lib/date-utils.ts",
+      deps: [],
+    },
+    "toast-config": {
+      file: "registry/lib/toast-config.ts",
       deps: [],
     },
   },

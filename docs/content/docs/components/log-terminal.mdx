@@ -1,0 +1,69 @@
+---
+title: LogTerminal
+description: Terminal-style log viewer with traffic-light chrome, line variants, and smart auto-scroll.
+---
+
+import { LogTerminalDemo } from "@/demos/log-terminal-demo";
+
+`LogTerminal` renders log output in a terminal-style panel. Lines stream in with variant coloring (error, warning, info, dim). The viewer auto-scrolls to the bottom as new lines arrive, but pauses when the user scrolls up — and resumes when they scroll back down.
+
+<LogTerminalDemo />
+
+## Import
+
+```tsx
+import { LogTerminal } from "@/components/log-terminal";
+import type { LogLine } from "@/components/log-terminal";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `lines` | `LogLine[]` | required | Log lines to display. |
+| `title` | `string` | `"Terminal"` | Title in the header bar. |
+| `maxHeight` | `string` | `"400px"` | Max height before scrolling. |
+| `actions` | `ReactNode` | `undefined` | Action buttons in the header. |
+
+### LogLine
+
+```ts
+interface LogLine {
+  id: string;
+  text: string;
+  variant?: "default" | "error" | "warning" | "info" | "dim";
+  timestamp?: string;
+}
+```
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { LogTerminal } from "@/components/log-terminal";
+
+export function BuildOutput() {
+  const [lines, setLines] = useState([]);
+
+  // Stream lines from your build process
+  useEffect(() => {
+    const es = new EventSource("/api/build-log");
+    es.onmessage = (e) => {
+      const line = JSON.parse(e.data);
+      setLines((prev) => [...prev, line]);
+    };
+    return () => es.close();
+  }, []);
+
+  return <LogTerminal lines={lines} title="build" />;
+}
+```
+
+## Notes
+
+- Auto-scroll pauses when the user scrolls more than 40px from the bottom.
+- Traffic-light dots in the header are decorative (no close/minimize behavior).
+- Uses monospace font (`font-mono`) for log output.
+- Line count shown next to the title.

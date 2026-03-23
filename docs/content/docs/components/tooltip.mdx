@@ -1,0 +1,38 @@
+---
+title: Tooltip
+description: Hover tooltip that positions itself dynamically relative to the trigger element.
+---
+
+`Tooltip` wraps any element and shows a label on hover. It computes its position using `getBoundingClientRect` and renders as a fixed-position element so it works inside scroll containers and overflow-hidden parents.
+
+## Import
+
+```tsx
+import { Tooltip } from "@/components/tooltip";
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | required | Tooltip text. |
+| `children` | `ReactNode` | required | Trigger element. |
+| `side` | `"right" \| "top" \| "bottom"` | `"right"` | Position relative to trigger. |
+
+## Usage
+
+```tsx
+import { Tooltip } from "@/components/tooltip";
+
+<Tooltip label="Dashboard">
+  <button>
+    <DashboardIcon />
+  </button>
+</Tooltip>
+```
+
+## Notes
+
+- Uses `position: fixed` with `z-50` so it renders above all content.
+- Has `pointer-events-none` to prevent tooltip from blocking interactions.
+- Includes `role="tooltip"` for accessibility.

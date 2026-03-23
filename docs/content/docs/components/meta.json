@@ -17,6 +17,10 @@
     "nav-indicator",
     "yank-indicator",
     "yankable",
-    "vim-sidebar"
+    "vim-sidebar",
+    "escape-blur",
+    "tooltip",
+    "log-terminal",
+    "notification-panel"
   ]
 }

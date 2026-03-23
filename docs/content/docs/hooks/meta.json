@@ -7,6 +7,8 @@
     "use-mouse-interaction",
     "use-scroll-into-view",
     "use-nav-hints",
-    "use-yank-mode"
+    "use-yank-mode",
+    "use-auto-resize",
+    "use-double-click"
   ]
 }

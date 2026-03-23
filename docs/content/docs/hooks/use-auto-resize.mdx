@@ -1,0 +1,53 @@
+---
+title: useAutoResize
+description: Auto-resizes a textarea to fit its content up to a maximum height.
+---
+
+`useAutoResize` grows a textarea as the user types, up to a configurable max height. Beyond that, the textarea becomes scrollable. Useful for chat inputs, comment boxes, and inline editors.
+
+## Import
+
+```tsx
+import { useAutoResize } from "@/hooks/use-auto-resize";
+```
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ref` | `RefObject<HTMLTextAreaElement>` | required | Ref to the textarea element. |
+| `value` | `string` | required | Current textarea value (triggers resize on change). |
+| `maxHeight` | `number` | `176` | Max height in pixels (~8 lines). |
+
+## Usage
+
+```tsx
+"use client";
+
+import { useState, useRef } from "react";
+import { useAutoResize } from "@/hooks/use-auto-resize";
+
+export function ChatInput() {
+  const [value, setValue] = useState("");
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useAutoResize(ref, value);
+
+  return (
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Type a message..."
+      className="w-full resize-none rounded-lg border border-white/[0.08] bg-zinc-950 px-4 py-3 text-sm text-zinc-200 outline-none"
+      rows={1}
+    />
+  );
+}
+```
+
+## Notes
+
+- Sets `overflow-y: auto` when content exceeds max height, `hidden` otherwise.
+- Resets height to `auto` before measuring to get accurate `scrollHeight`.
+- Returns the `resize` function in case you need to trigger it manually.
