@@ -1,0 +1,93 @@
+---
+title: Sidebar Navigation
+description: Navigate the docs sidebar with j/k, open with Enter, search with slash.
+---
+
+The docs site itself is a live demo of vimstyle-ui. The sidebar responds to vim keybindings — no clicking required.
+
+**Try it now.** Press `j` or `k` to move the selection through the sidebar. Press `Enter` to open the selected page. Press `/` to search.
+
+## Keybindings
+
+| Key | Action |
+|---|---|
+| `j` | Move selection down |
+| `k` | Move selection up |
+| `Enter` | Navigate to selected page |
+| `/` | Open search dialog |
+| `Space` | Activate [space-motion](/docs/fast-navigation/space-motion) jump |
+| `y` | Activate [yank mode](/docs/fast-navigation/yank-mode) |
+| `Esc` | Clear selection |
+
+All bindings appear in the hint bar at the bottom of every docs page. The hint bar auto-hides after 8 seconds and reappears on any key press.
+
+## How it works
+
+The docs layout includes three client components that add keyboard behavior to the fumadocs sidebar:
+
+### VimSidebar
+
+Scans `#nd-sidebar` for doc links and manages a visual selection via the `data-vim-selected` attribute. Handles `j`/`k`/`Enter`/`Esc`/`/` keybindings.
+
+```tsx
+// docs/app/docs/layout.tsx
+import { VimSidebar } from "../components/vim-sidebar";
+import { SpaceMotion } from "../components/space-motion";
+import { DocsHints } from "../components/docs-hints";
+
+export default function Layout({ children }) {
+  return (
+    <DocsLayout tree={source.pageTree} nav={{ title: "vimstyle-ui" }}>
+      {children}
+      <VimSidebar />
+      <SpaceMotion />
+      <DocsHints />
+    </DocsLayout>
+  );
+}
+```
+
+The selection highlight is a CSS rule targeting the data attribute:
+
+```css
+#nd-sidebar a[data-vim-selected="true"] {
+  background: rgb(139 92 246 / 0.08) !important;
+  outline: 1px solid rgb(139 92 246 / 0.3);
+  border-radius: 0.5rem;
+}
+```
+
+### DocsHints
+
+A floating hint bar at the bottom of the viewport showing all available keybindings. Uses the `KbdHint` component from the registry — the docs eat their own cooking.
+
+### SpaceMotion
+
+The [space-motion](/docs/fast-navigation/space-motion) overlay for instant prefix-based jumping.
+
+## Applying this to your own project
+
+The same pattern works with any sidebar or navigation component:
+
+1. **Scan DOM links** — query your sidebar for `<a>` elements
+2. **Track selection** — manage an index state, add a data attribute for CSS
+3. **Handle keys** — listen for j/k/Enter/Esc in a global keydown handler
+4. **Add a hint bar** — use `KbdHint` components to show available bindings
+
+For full control over the sidebar rendering, use the registry components directly:
+
+```tsx
+import { useVimNavigation } from "@/hooks/use-vim-navigation";
+import { ListLayout } from "@/layouts/list-layout";
+```
+
+These handle keyboard navigation, fuzzy search, scroll, and mouse interaction out of the box.
+
+## Safety
+
+The sidebar keybindings do NOT activate when:
+
+- An input, textarea, or select is focused (so search works normally)
+- A modifier key (Ctrl, Meta, Alt) is held
+- A dialog or overlay is open
+- Space-motion or yank mode is active
