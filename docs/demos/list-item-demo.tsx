@@ -24,8 +24,12 @@ export function ListItemDemo() {
             selected={i === selectedIndex}
             editing={i === editingIndex}
             onClick={() => {
-              setSelectedIndex(i);
-              setEditingIndex(i === editingIndex ? null : undefined!);
+              if (i === selectedIndex) {
+                setEditingIndex(i === editingIndex ? null : i);
+              } else {
+                setSelectedIndex(i);
+                setEditingIndex(null);
+              }
             }}
             onMouseMove={() => setSelectedIndex(i)}
           >
@@ -38,7 +42,7 @@ export function ListItemDemo() {
       </div>
       <div className="border-t border-white/[0.06] px-6 py-2">
         <p className="text-[11px] text-zinc-600">
-          Click to select. Try clicking the same item again.
+          Click to select — click a selected item again to toggle editing state.
         </p>
       </div>
     </ComponentPreview>
