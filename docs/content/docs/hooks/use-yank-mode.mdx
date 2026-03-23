@@ -3,9 +3,13 @@ title: useYankMode
 description: Vim-style yank (copy) mode — press y, type a prefix, value copied to clipboard.
 ---
 
+import { YankDemo } from "@/demos/yank-demo";
+
 `useYankMode` adds vim-style yanking to any list or page. Press `y` to enter yank mode, hint badges appear on each yankable item, type the prefix to copy that item's value to the clipboard. The consumer defines what's yankable and what value each target yields.
 
 Same mechanics as [useNavHints](/docs/hooks/use-nav-hints) but the action is clipboard copy instead of navigation.
+
+<YankDemo />
 
 ## Import
 

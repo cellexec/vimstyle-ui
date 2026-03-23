@@ -3,9 +3,13 @@ title: useNavHints
 description: Space-motion hint navigation — computes unique prefixes and handles keyboard-driven jumping.
 ---
 
+import { NavHintsDemo } from "@/demos/nav-hints-demo";
+
 `useNavHints` powers space-motion navigation. Given a list of labelled items, it computes the shortest unique prefix for each label. When the user presses Space (or a custom activation key), hint mode activates. Each typed character narrows the matches until exactly one item remains — then `onMatch` fires immediately.
 
 This is the same pattern as vimium's `f` key for link hints, adapted for any navigable list.
+
+<NavHintsDemo />
 
 ## Import
 
