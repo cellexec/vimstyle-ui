@@ -118,7 +118,8 @@ export function Showcase({ children, hints, className = "" }: ShowcaseProps) {
                   stroke="none"
                 />
               </svg>
-              <span>kbd</span>
+              <span>keyboard shortcuts</span>
+              <kbd className="rounded border border-white/[0.08] bg-white/[0.04] px-1 py-0.5 font-mono text-[10px] leading-none">?</kbd>
             </button>
           )}
         </div>
